@@ -1,0 +1,589 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: transparent;
+  user-select: none;
+}
+
+body {
+  font-family: Inter, Segoe UI, system-ui, sans-serif;
+}
+
+#pet-wrap {
+  position: relative;
+  width: 92px;
+  height: 116px;
+  display: grid;
+  place-items: end center;
+  padding-bottom: 8px;
+}
+
+#pet-button {
+  width: 66px;
+  height: 82px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: grab;
+  -webkit-app-region: no-drag;
+}
+
+#pet-button:active {
+  cursor: grabbing;
+}
+
+#pet-character {
+  width: 66px;
+  height: 82px;
+  overflow: visible;
+  filter: drop-shadow(0 8px 10px rgba(4, 18, 28, 0.34));
+  transform-origin: 50% 90%;
+}
+
+.shadow {
+  fill: rgba(8, 23, 38, 0.18);
+}
+
+.head,
+.torso,
+.ear,
+.hand,
+.foot {
+  fill: url("#shell");
+  stroke: #0e2435;
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+.arm,
+.leg,
+.antenna {
+  fill: none;
+  stroke: #0e2435;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.antenna {
+  stroke-width: 2.6;
+}
+
+.antenna-tip,
+.core,
+.core-pulse,
+.cheek,
+.status-lights circle {
+  fill: #54ddff;
+  stroke: #0e2435;
+  stroke-width: 2.2;
+}
+
+.core-pulse,
+.status-lights circle {
+  stroke-width: 1.2;
+  filter: drop-shadow(0 0 3px rgba(84, 221, 255, 0.9));
+}
+
+.blush {
+  fill: rgba(123, 225, 255, 0.24);
+}
+
+.visor {
+  fill: url("#visor");
+  stroke: #35d8ff;
+  stroke-width: 2;
+}
+
+.top-shine,
+.core-line {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.8);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.eye-ring {
+  fill: none;
+  stroke: url("#eyeGlow");
+  stroke-width: 4;
+  filter: drop-shadow(0 0 4px rgba(61, 219, 255, 0.95));
+}
+
+.eye-dot {
+  fill: #e9fbff;
+}
+
+.eyes-sleepy {
+  display: none;
+}
+
+.eye-line {
+  fill: none;
+  stroke: #7decff;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.mouth {
+  fill: none;
+  stroke: #bdf5ff;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+
+.mouth-o,
+.mouth-confused,
+.mouth-flat {
+  display: none;
+}
+
+.sleep-marks {
+  display: none;
+  fill: none;
+  stroke: #62dfff;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.78;
+}
+
+.head-group {
+  transform-origin: 60px 74px;
+}
+
+.body-group {
+  transform-origin: 60px 112px;
+}
+
+.antenna-group {
+  transform-origin: 60px 34px;
+}
+
+.left-arm,
+.right-arm,
+.left-hand,
+.right-hand,
+.left-antenna,
+.right-antenna,
+.left-tip,
+.right-tip {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+#speech-bubble {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  max-width: 74px;
+  min-height: 22px;
+  padding: 5px 7px;
+  border: 1px solid rgba(75, 217, 255, 0.42);
+  border-radius: 999px;
+  background: rgba(8, 16, 28, 0.94);
+  color: #eefbff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  line-height: 1.2;
+  text-align: center;
+  opacity: 0;
+  transform: translate(-50%, -7px);
+  transition: opacity 160ms ease, transform 160ms ease;
+  pointer-events: none;
+}
+
+#speech-bubble.visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+#status-dot {
+  position: absolute;
+  right: 16px;
+  bottom: 28px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid #08101c;
+  border-radius: 999px;
+  background: #4ddcff;
+}
+
+.pet-idle {
+  animation: botFloat 2.6s ease-in-out infinite;
+}
+
+.pet-idle .head-group {
+  animation: headBob 2.6s ease-in-out infinite;
+}
+
+.pet-idle .antenna-group {
+  animation: antennaIdle 2.6s ease-in-out infinite;
+}
+
+.pet-idle .eye-ring {
+  animation: eyeGlow 2.1s ease-in-out infinite;
+}
+
+.pet-idle .core-pulse {
+  animation: coreBeat 1.8s ease-in-out infinite;
+}
+
+.pet-happy,
+.pet-success {
+  animation: botHop 0.48s ease-in-out 2;
+}
+
+.pet-happy .right-arm,
+.pet-happy .right-hand,
+.pet-success .right-arm,
+.pet-success .right-hand {
+  animation: botWave 0.34s ease-in-out 5;
+}
+
+.pet-excited {
+  animation: botWiggle 0.34s ease-in-out 5;
+}
+
+.pet-excited .antenna-group {
+  animation: antennaSpark 0.22s ease-in-out 8;
+}
+
+.pet-excited .core-pulse,
+.pet-success .core-pulse,
+.pet-happy .core-pulse {
+  animation: coreBeat 0.5s ease-in-out 4;
+}
+
+.pet-thinking {
+  animation: botThink 1s ease-in-out infinite;
+}
+
+.pet-thinking .mouth-smile {
+  display: none;
+}
+
+.pet-thinking .mouth-o {
+  display: block;
+  animation: mouthPulse 1s ease-in-out infinite;
+}
+
+.pet-thinking .eye-ring {
+  animation: eyeScan 1s ease-in-out infinite;
+}
+
+.pet-thinking .status-lights circle {
+  animation: lightChase 0.9s ease-in-out infinite;
+}
+
+.pet-listening,
+.pet-curious {
+  animation: botHoverJump 0.72s ease-in-out infinite;
+}
+
+.pet-listening .left-arm,
+.pet-listening .left-hand,
+.pet-curious .left-arm,
+.pet-curious .left-hand {
+  animation: hoverLeftHand 0.72s ease-in-out infinite;
+}
+
+.pet-listening .right-arm,
+.pet-listening .right-hand,
+.pet-curious .right-arm,
+.pet-curious .right-hand {
+  animation: hoverRightHand 0.72s ease-in-out infinite;
+}
+
+.pet-listening .left-antenna,
+.pet-listening .left-tip,
+.pet-curious .left-antenna,
+.pet-curious .left-tip {
+  animation: antennaPerk 1.2s ease-in-out infinite;
+}
+
+.pet-listening .right-antenna,
+.pet-listening .right-tip,
+.pet-curious .right-antenna,
+.pet-curious .right-tip {
+  animation: antennaPerk 1.2s ease-in-out infinite reverse;
+}
+
+.pet-error,
+.pet-confused {
+  animation: botShake 0.1s ease-in-out 7;
+}
+
+.pet-error .mouth-smile,
+.pet-confused .mouth-smile {
+  display: none;
+}
+
+.pet-error .mouth-confused,
+.pet-confused .mouth-confused {
+  display: block;
+}
+
+.pet-error .eye-ring,
+.pet-confused .eye-ring {
+  stroke: #ff7aa8;
+  filter: drop-shadow(0 0 4px rgba(255, 93, 145, 0.85));
+}
+
+.pet-sleepy,
+.pet-sleeping {
+  animation: sleepBreath 3s ease-in-out infinite;
+}
+
+.pet-sleepy .eyes-open,
+.pet-sleeping .eyes-open,
+.pet-sleepy .mouth-smile,
+.pet-sleeping .mouth-smile {
+  display: none;
+}
+
+.pet-sleepy .eyes-sleepy,
+.pet-sleeping .eyes-sleepy,
+.pet-sleepy .mouth-flat,
+.pet-sleeping .mouth-flat,
+.pet-sleepy .sleep-marks,
+.pet-sleeping .sleep-marks {
+  display: block;
+}
+
+.pet-sleepy .sleep-marks,
+.pet-sleeping .sleep-marks {
+  animation: sleepFloat 2s ease-in-out infinite;
+}
+
+@keyframes botFloat {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.015);
+  }
+}
+
+@keyframes headBob {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  50% {
+    transform: translateY(-2px) rotate(-1deg);
+  }
+}
+
+@keyframes antennaIdle {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  50% {
+    transform: rotate(1.5deg);
+  }
+}
+
+@keyframes eyeGlow {
+  0%,
+  100% {
+    opacity: 0.88;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes coreBeat {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.28);
+  }
+}
+
+@keyframes lightChase {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes botHop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  45% {
+    transform: translateY(-10px) scale(0.96, 1.06);
+  }
+}
+
+@keyframes botWave {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  50% {
+    transform: rotate(-22deg) translateY(-2px);
+  }
+}
+
+@keyframes botWiggle {
+  0%,
+  100% {
+    transform: rotate(0) scale(1);
+  }
+  35% {
+    transform: rotate(8deg) scale(1.05);
+  }
+  70% {
+    transform: rotate(-8deg) scale(1.05);
+  }
+}
+
+@keyframes antennaSpark {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes botThink {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 10px 12px rgba(4, 18, 28, 0.3));
+  }
+  50% {
+    transform: scale(1.04);
+    filter: drop-shadow(0 12px 18px rgba(64, 216, 255, 0.46));
+  }
+}
+
+@keyframes eyeScan {
+  0%,
+  100% {
+    stroke-width: 4;
+  }
+  50% {
+    stroke-width: 5.4;
+  }
+}
+
+@keyframes mouthPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.72, 1.15);
+  }
+}
+
+@keyframes botTilt {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes botHoverJump {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  42% {
+    transform: translateY(-11px) scale(0.96, 1.08);
+  }
+  72% {
+    transform: translateY(1px) scale(1.03, 0.97);
+  }
+}
+
+@keyframes hoverLeftHand {
+  0%,
+  100% {
+    transform: rotate(0) translateY(0);
+  }
+  42% {
+    transform: rotate(-18deg) translateY(-7px);
+  }
+}
+
+@keyframes hoverRightHand {
+  0%,
+  100% {
+    transform: rotate(0) translateY(0);
+  }
+  42% {
+    transform: rotate(18deg) translateY(-7px);
+  }
+}
+
+@keyframes antennaPerk {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+  50% {
+    transform: translateY(-3px) rotate(8deg);
+  }
+}
+
+@keyframes botShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px) rotate(-2deg);
+  }
+  75% {
+    transform: translateX(5px) rotate(2deg);
+  }
+}
+
+@keyframes sleepBreath {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    transform: translateY(2px) scaleY(0.97);
+  }
+}
+
+@keyframes sleepFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translateY(-7px);
+    opacity: 0.82;
+  }
+}

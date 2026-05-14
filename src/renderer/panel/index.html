@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" />
+    <title>BEBO Assistant</title>
+    <link rel="stylesheet" href="./panel.css" />
+  </head>
+  <body>
+    <main class="panel-shell">
+      <header class="panel-header">
+        <div>
+          <p class="eyebrow">BEBO the PET</p>
+          <h1>BEBO Assistant</h1>
+        </div>
+        <button id="close-button" class="icon-button" aria-label="Close panel">×</button>
+      </header>
+
+      <section class="quick-actions" aria-label="Quick actions">
+        <button data-task="summarize">Summarize</button>
+        <button data-task="humanize">Humanize</button>
+        <button data-task="simplify">Simplify</button>
+        <button data-task="draft_email">Draft Email</button>
+        <button data-task="fix_grammar">Fix Grammar</button>
+        <button data-task="ask_ai">Ask AI</button>
+      </section>
+
+      <section class="input-section">
+        <label for="task-input">Input</label>
+        <textarea id="task-input" placeholder="Paste text and pick an action — or type any question for Ask AI."></textarea>
+      </section>
+
+      <section class="output-section">
+        <div class="section-row">
+          <label for="task-output">Output</label>
+          <button id="copy-button">Copy</button>
+        </div>
+        <pre id="task-output" contenteditable="true" spellcheck="false">Paste text and choose a quick action. If AI is not configured yet, I will show the setup step here.</pre>
+      </section>
+
+      <footer>
+        <span>Ctrl+Shift+P opens this panel</span>
+      </footer>
+    </main>
+    <script src="./panel.js"></script>
+  </body>
+</html>

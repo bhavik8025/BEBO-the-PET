@@ -1,0 +1,17 @@
+{
+  "name": "bebo-the-pet",
+  "version": "0.1.0",
+  "description": "BEBO, a tiny animated AI pet assistant for Windows",
+  "main": "src/main/index.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "electron": "^29.4.6"
+  }
+}
