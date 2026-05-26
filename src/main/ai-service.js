@@ -1,5 +1,6 @@
 const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
 const GROQ_MODEL    = 'llama-3.3-70b-versatile';
+const { getGroqKey } = require('./config');
 
 // Global system prompt — enforces plain text and clean output for every task
 const SYSTEM_PROMPT = `You are a precise, expert-level desktop productivity assistant running inside a lightweight desktop app.
@@ -173,7 +174,8 @@ async function runAITask({ type, input, screenshotBase64 }) {
     return { ok: false, output: missingInput };
   }
 
-  if (!process.env.GROQ_API_KEY) {
+  const apiKey = getGroqKey();
+  if (!apiKey) {
     return {
       ok: false,
       output: [
@@ -197,7 +199,7 @@ async function runAITask({ type, input, screenshotBase64 }) {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      'authorization': `Bearer ${process.env.GROQ_API_KEY}`
+      'authorization': `Bearer ${apiKey}`
     },
     body: JSON.stringify({
       model: GROQ_MODEL,

@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" />
+    <title>Desktop Pet</title>
+    <link rel="stylesheet" href="./pet.css" />
+  </head>
+  <body>
+    <main id="pet-wrap" aria-label="Desktop AI Pet">
+      <div id="speech-bubble" role="status"></div>
+      <button id="pet-button" aria-label="Open pet assistant">
+        <svg id="pet-character" class="pet-idle" viewBox="0 0 120 136" aria-hidden="true">
+          <defs>
+            <linearGradient id="shell" x1="28" x2="94" y1="12" y2="116" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#ffffff" />
+              <stop offset="0.5" stop-color="#dff6ff" />
+              <stop offset="1" stop-color="#8fd7ff" />
+            </linearGradient>
+            <linearGradient id="visor" x1="29" x2="92" y1="35" y2="68" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#071421" />
+              <stop offset="1" stop-color="#12324c" />
+            </linearGradient>
+            <radialGradient id="eyeGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0" stop-color="#e9fbff" />
+              <stop offset="0.45" stop-color="#52dcff" />
+              <stop offset="1" stop-color="#0874ff" />
+            </radialGradient>
+          </defs>
+
+          <ellipse class="shadow" cx="60" cy="126" rx="28" ry="5" />
+
+          <g class="antenna-group">
+            <path class="antenna left-antenna" d="M39 26 L34 8" />
+            <circle class="antenna-tip left-tip" cx="33" cy="6" r="4" />
+            <path class="antenna right-antenna" d="M81 26 L86 8" />
+            <circle class="antenna-tip right-tip" cx="87" cy="6" r="4" />
+          </g>
+
+          <g class="body-group">
+            <path class="arm left-arm" d="M34 78 C22 82 18 91 22 101" />
+            <path class="arm right-arm" d="M86 78 C98 82 102 91 98 101" />
+            <circle class="hand left-hand" cx="22" cy="101" r="6" />
+            <circle class="hand right-hand" cx="98" cy="101" r="6" />
+            <path class="torso" d="M39 76 C43 68 77 68 81 76 L86 105 C79 116 42 116 35 105 Z" />
+            <rect class="core" x="51" y="84" width="18" height="15" rx="5" />
+            <circle class="core-pulse" cx="60" cy="91.5" r="3" />
+            <path class="core-line" d="M55 105 L65 105" />
+            <path class="leg left-leg" d="M48 111 L43 123" />
+            <path class="leg right-leg" d="M72 111 L77 123" />
+            <path class="foot left-foot" d="M33 123 C38 116 51 116 55 124 C50 130 39 130 33 123 Z" />
+            <path class="foot right-foot" d="M65 124 C69 116 82 116 87 123 C81 130 70 130 65 124 Z" />
+          </g>
+
+          <g class="head-group">
+            <circle class="ear left-ear" cx="25" cy="51" r="11" />
+            <circle class="ear right-ear" cx="95" cy="51" r="11" />
+            <path class="head" d="M29 26 C36 17 84 17 91 26 C98 34 98 67 91 75 C83 84 37 84 29 75 C22 67 22 34 29 26 Z" />
+            <path class="top-shine" d="M39 27 C48 23 70 23 80 27" />
+            <g class="status-lights">
+              <circle cx="52" cy="31" r="1.5" />
+              <circle cx="60" cy="30" r="1.5" />
+              <circle cx="68" cy="31" r="1.5" />
+            </g>
+            <rect class="visor" x="31" y="38" width="58" height="28" rx="14" />
+            <g class="eyes eyes-open">
+              <circle class="eye-ring left-eye" cx="48" cy="52" r="8" />
+              <circle class="eye-ring right-eye" cx="72" cy="52" r="8" />
+              <circle class="eye-dot left-pupil" cx="48" cy="52" r="3" />
+              <circle class="eye-dot right-pupil" cx="72" cy="52" r="3" />
+            </g>
+            <g class="eyes eyes-sleepy">
+              <path class="eye-line left-eye-line" d="M41 52 C45 56 51 56 55 52" />
+              <path class="eye-line right-eye-line" d="M65 52 C69 56 75 56 79 52" />
+            </g>
+            <path class="mouth mouth-smile" d="M53 61 C57 65 64 65 68 61" />
+            <ellipse class="mouth mouth-o" cx="61" cy="61" rx="4" ry="5" />
+            <path class="mouth mouth-confused" d="M52 62 C57 58 64 58 69 62" />
+            <path class="mouth mouth-flat" d="M52 62 L69 62" />
+            <circle class="cheek left-cheek" cx="38" cy="61" r="2" />
+            <circle class="cheek right-cheek" cx="82" cy="61" r="2" />
+            <circle class="blush left-blush" cx="39" cy="58" r="3" />
+            <circle class="blush right-blush" cx="81" cy="58" r="3" />
+            <g class="sleep-marks">
+              <path d="M91 31 L101 31 L91 42 L102 42" />
+              <path d="M97 18 L105 18 L97 27 L106 27" />
+            </g>
+          </g>
+        </svg>
+      </button>
+      <span id="status-dot" hidden></span>
+    </main>
+    <script src="./pet.js"></script>
+  </body>
+</html>

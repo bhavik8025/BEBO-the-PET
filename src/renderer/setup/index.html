@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" />
+  <title>BEBO Setup</title>
+  <link rel="stylesheet" href="./setup.css" />
+</head>
+<body>
+  <div class="titlebar">
+    <button class="close-btn" id="close-btn" title="Cancel">×</button>
+  </div>
+
+  <div class="shell">
+    <!-- BEBO bot character (inline SVG) -->
+    <svg class="bebo-icon" viewBox="0 0 120 136" aria-hidden="true">
+      <defs>
+        <linearGradient id="sh" x1="28" x2="94" y1="12" y2="116" gradientUnits="userSpaceOnUse">
+          <stop offset="0"   stop-color="#ffffff"/>
+          <stop offset="0.5" stop-color="#dff6ff"/>
+          <stop offset="1"   stop-color="#8fd7ff"/>
+        </linearGradient>
+        <linearGradient id="vi" x1="29" x2="92" y1="35" y2="68" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#071421"/>
+          <stop offset="1" stop-color="#12324c"/>
+        </linearGradient>
+        <radialGradient id="eg" cx="50%" cy="50%" r="50%">
+          <stop offset="0"    stop-color="#e9fbff"/>
+          <stop offset="0.45" stop-color="#52dcff"/>
+          <stop offset="1"    stop-color="#0874ff"/>
+        </radialGradient>
+      </defs>
+      <ellipse cx="60" cy="126" rx="28" ry="5" fill="rgba(8,23,38,.18)"/>
+      <!-- Antennas -->
+      <path d="M39 26 L34 8" stroke="#64b4ff" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <circle cx="33" cy="6" r="4" fill="#54ddff"/>
+      <path d="M81 26 L86 8" stroke="#64b4ff" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <circle cx="87" cy="6" r="4" fill="#54ddff"/>
+      <!-- Arms -->
+      <path d="M34 78 C22 82 18 91 22 101" stroke="#0e2435" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M86 78 C98 82 102 91 98 101" stroke="#0e2435" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <circle cx="22" cy="101" r="6" fill="url(#sh)" stroke="#0e2435" stroke-width="3"/>
+      <circle cx="98" cy="101" r="6" fill="url(#sh)" stroke="#0e2435" stroke-width="3"/>
+      <!-- Torso -->
+      <path d="M39 76 C43 68 77 68 81 76 L86 105 C79 116 42 116 35 105 Z" fill="url(#sh)" stroke="#0e2435" stroke-width="3"/>
+      <rect x="51" y="84" width="18" height="15" rx="5" fill="#54ddff" stroke="#0e2435" stroke-width="2.2"/>
+      <circle cx="60" cy="91.5" r="3" fill="#54ddff" style="filter:drop-shadow(0 0 3px rgba(84,221,255,.9))"/>
+      <!-- Legs/feet -->
+      <path d="M48 111 L43 123" stroke="#0e2435" stroke-width="4" stroke-linecap="round"/>
+      <path d="M72 111 L77 123" stroke="#0e2435" stroke-width="4" stroke-linecap="round"/>
+      <path d="M33 123 C38 116 51 116 55 124 C50 130 39 130 33 123 Z" fill="url(#sh)" stroke="#0e2435" stroke-width="3"/>
+      <path d="M65 124 C69 116 82 116 87 123 C81 130 70 130 65 124 Z" fill="url(#sh)" stroke="#0e2435" stroke-width="3"/>
+      <!-- Ears + head -->
+      <circle cx="25" cy="51" r="11" fill="url(#sh)" stroke="#0e2435" stroke-width="3"/>
+      <circle cx="95" cy="51" r="11" fill="url(#sh)" stroke="#0e2435" stroke-width="3"/>
+      <path d="M29 26 C36 17 84 17 91 26 C98 34 98 67 91 75 C83 84 37 84 29 75 C22 67 22 34 29 26 Z" fill="url(#sh)" stroke="#0e2435" stroke-width="3"/>
+      <!-- Status lights -->
+      <circle cx="52" cy="31" r="1.5" fill="#50ff8c"/>
+      <circle cx="60" cy="30" r="1.5" fill="#54ddff"/>
+      <circle cx="68" cy="31" r="1.5" fill="#ffaa46"/>
+      <!-- Visor -->
+      <rect x="31" y="38" width="58" height="28" rx="14" fill="url(#vi)"/>
+      <!-- Eyes -->
+      <circle cx="48" cy="52" r="8" fill="none" stroke="url(#eg)" stroke-width="4" style="filter:drop-shadow(0 0 4px rgba(61,219,255,.95))"/>
+      <circle cx="72" cy="52" r="8" fill="none" stroke="url(#eg)" stroke-width="4" style="filter:drop-shadow(0 0 4px rgba(61,219,255,.95))"/>
+      <circle cx="48" cy="52" r="3" fill="#e9fbff"/>
+      <circle cx="72" cy="52" r="3" fill="#e9fbff"/>
+      <!-- Smile -->
+      <path d="M53 61 C57 65 64 65 68 61" fill="none" stroke="#bdf5ff" stroke-width="2.4" stroke-linecap="round"/>
+    </svg>
+
+    <h1>Welcome to BEBO the PET</h1>
+    <p class="subtitle">One free API key and you're set.<br>Takes about 60 seconds.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          Go to <a id="groq-link">console.groq.com/keys</a> and sign up free
+          — no credit card needed.
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">Click <strong style="color:#eef2ff">Create API Key</strong>, give it any name, copy it.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">Paste it below and click <strong style="color:#eef2ff">Verify & Launch</strong>.</div>
+      </div>
+    </div>
+
+    <div class="input-label">Your Groq API Key</div>
+    <input
+      type="password"
+      id="key-input"
+      class="key-input"
+      placeholder="gsk_..."
+      autocomplete="off"
+      spellcheck="false"
+    />
+
+    <div class="status" id="status"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="cancel-btn">Cancel</button>
+      <button class="btn btn-primary" id="verify-btn" disabled>Verify &amp; Launch</button>
+    </div>
+
+    <div class="footer">
+      Your key is stored locally on your computer only.<br>
+      It is never sent anywhere except Groq's own API.
+    </div>
+  </div>
+
+  <script src="./setup.js"></script>
+</body>
+</html>

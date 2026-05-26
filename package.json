@@ -1,17 +1,64 @@
 {
   "name": "bebo-the-pet",
-  "version": "0.1.0",
-  "description": "BEBO, a tiny animated AI pet assistant for Windows",
+  "version": "1.0.0",
+  "description": "BEBO — a tiny animated AI desktop companion powered by Llama 3.3 70B",
   "main": "src/main/index.js",
   "private": true,
   "scripts": {
     "start": "electron .",
-    "dev": "electron . --dev"
+    "dev": "electron . --dev",
+    "build": "electron-builder --win",
+    "build:installer": "electron-builder --win nsis",
+    "build:portable": "electron-builder --win portable"
   },
   "dependencies": {
     "dotenv": "^16.4.5"
   },
   "devDependencies": {
-    "electron": "^29.4.6"
+    "electron": "^29.4.6",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.bhavik.bebo-the-pet",
+    "productName": "BEBO the PET",
+    "copyright": "Copyright 2024 Bhavik Thakkar",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "extraResources": [],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "BEBO the PET",
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico"
+    },
+    "portable": {
+      "artifactName": "BEBO-portable-${version}.exe"
+    }
   }
 }

@@ -61,4 +61,25 @@ function createPanelWindow() {
   return win;
 }
 
-module.exports = { createPetWindow, createPanelWindow };
+function createSetupWindow() {
+  const win = new BrowserWindow({
+    width: 440,
+    height: 580,
+    frame: false,
+    resizable: false,
+    center: true,
+    alwaysOnTop: true,
+    title: 'BEBO Setup',
+    backgroundColor: '#12131f',
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, '../renderer/setup/preload.js'),
+    },
+  });
+
+  win.loadFile(path.join(__dirname, '../renderer/setup/index.html'));
+  return win;
+}
+
+module.exports = { createPetWindow, createPanelWindow, createSetupWindow };

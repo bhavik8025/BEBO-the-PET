@@ -12,7 +12,7 @@ let dragOffsetY = 110;
 
 function setState(state, durationMs) {
   currentState = state || 'idle';
-  petCharacter.className.baseVal = `pet-${currentState}`;
+  petCharacter.className = `pet-${currentState}`;
 
   if (durationMs) {
     window.setTimeout(() => setState('idle'), durationMs);
