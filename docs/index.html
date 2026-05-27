@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ═══ PRIMARY SEO ═══ -->
+  <title>BEBO the PET — Free AI Desktop Assistant for Windows</title>
+  <meta name="description" content="BEBO is a free, open-source AI desktop pet for Windows. Powered by Llama 3.3 70B and Groq. Summarize, draft emails, fix grammar — all in under 2 seconds. No subscription, no browser needed." />
+  <meta name="keywords" content="AI desktop assistant Windows, free AI tool Windows, BEBO the PET, Groq Llama Windows app, AI pet desktop, Electron AI app, AI productivity Windows, free AI assistant, open source AI Windows, desktop AI companion" />
+  <meta name="author" content="Bhavik Thakkar" />
+  <link rel="canonical" href="https://bhavik8025.github.io/BEBO-the-PET/" />
+
+  <!-- ═══ OPEN GRAPH (LinkedIn, Facebook, WhatsApp previews) ═══ -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="BEBO the PET — Free AI Desktop Assistant for Windows" />
+  <meta property="og:description" content="A tiny AI robot that lives on your Windows desktop. One click — instant AI: summarize, email, fix grammar. Free forever. Powered by Llama 3.3 70B + Groq." />
+  <meta property="og:url" content="https://bhavik8025.github.io/BEBO-the-PET/" />
+  <meta property="og:image" content="https://bhavik8025.github.io/BEBO-the-PET/og-image.png" />
+  <meta property="og:site_name" content="BEBO the PET" />
+
+  <!-- ═══ TWITTER / X CARD ═══ -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="BEBO the PET — Free AI Desktop Assistant for Windows" />
+  <meta name="twitter:description" content="Free AI desktop pet for Windows. Llama 3.3 70B + Groq. One click, instant AI — no browser, no subscription." />
+  <meta name="twitter:image" content="https://bhavik8025.github.io/BEBO-the-PET/og-image.png" />
+
+  <!-- ═══ SCHEMA.ORG — Google Rich Results ═══ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "BEBO the PET",
+    "operatingSystem": "Windows",
+    "applicationCategory": "ProductivityApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "description": "BEBO the PET is a free, open-source AI desktop assistant for Windows. A tiny animated robot that lives on your screen — powered by Llama 3.3 70B and Groq API. Summarize, draft emails, fix grammar, simplify text in under 2 seconds.",
+    "softwareVersion": "1.0.0",
+    "author": {
+      "@type": "Person",
+      "name": "Bhavik Thakkar"
+    },
+    "downloadUrl": "https://github.com/bhavik8025/BEBO-the-PET/releases/tag/v1.0.0",
+    "url": "https://bhavik8025.github.io/BEBO-the-PET/",
+    "screenshot": "https://bhavik8025.github.io/BEBO-the-PET/og-image.png",
+    "keywords": "AI desktop assistant, Windows AI tool, free AI, Llama, Groq, Electron"
+  }
+  </script>
+
+  <style>
+    /* ═══ RESET & BASE ═══ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:     #12131f;
+      --bg2:    #16172a;
+      --card:   #1a1c2e;
+      --purple: #7c5cfc;
+      --lpur:   #a78bfa;
+      --dpur:   #2d1b69;
+      --text:   #eef2ff;
+      --muted:  #8b8fa8;
+      --cyan:   #22d3ee;
+      --green:  #10b981;
+      --yellow: #fbbf24;
+      --orange: #fb923c;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a { color: var(--lpur); text-decoration: none; }
+    a:hover { color: var(--purple); }
+
+    /* ═══ LAYOUT ═══ */
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+    section { padding: 80px 0; }
+
+    /* ═══ GLOW BG ═══ */
+    .glow {
+      position: fixed; border-radius: 50%; filter: blur(120px);
+      pointer-events: none; z-index: 0;
+    }
+    .glow-1 { width: 500px; height: 500px; background: rgba(124,92,252,0.12); top: -100px; right: -100px; }
+    .glow-2 { width: 400px; height: 400px; background: rgba(34,211,238,0.07); bottom: 200px; left: -100px; }
+
+    /* ═══ NAV ═══ */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(18,19,31,0.85); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(124,92,252,0.18);
+      padding: 14px 0;
+    }
+    nav .inner {
+      max-width: 960px; margin: 0 auto; padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo { font-weight: 700; font-size: 18px; color: var(--text); }
+    .nav-logo span { color: var(--lpur); }
+    .nav-links { display: flex; gap: 28px; align-items: center; }
+    .nav-links a { color: var(--muted); font-size: 15px; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 22px; border-radius: 9999px; font-weight: 600; font-size: 15px;
+      cursor: pointer; transition: all 0.2s; border: none;
+    }
+    .btn-primary {
+      background: var(--purple); color: #fff;
+    }
+    .btn-primary:hover { background: var(--lpur); color: var(--bg); transform: translateY(-1px); }
+    .btn-ghost {
+      background: transparent; color: var(--lpur);
+      border: 1.5px solid rgba(124,92,252,0.5);
+    }
+    .btn-ghost:hover { border-color: var(--lpur); background: rgba(124,92,252,0.08); }
+    .btn-lg { padding: 16px 36px; font-size: 17px; }
+
+    /* ═══ HERO ═══ */
+    #hero {
+      padding: 100px 0 80px;
+      text-align: center;
+      position: relative;
+    }
+    .badge {
+      display: inline-block; padding: 6px 16px; border-radius: 9999px;
+      background: var(--dpur); border: 1px solid rgba(167,139,250,0.4);
+      color: var(--lpur); font-size: 13px; font-weight: 600;
+      margin-bottom: 28px; letter-spacing: 0.04em;
+    }
+    h1 {
+      font-size: clamp(36px, 6vw, 64px);
+      font-weight: 800; line-height: 1.1;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, var(--text) 0%, var(--lpur) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(17px, 2.5vw, 21px);
+      color: var(--muted); max-width: 640px; margin: 0 auto 40px;
+    }
+    .hero-sub strong { color: var(--text); }
+    .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+    .hero-note { font-size: 13px; color: var(--muted); }
+    .hero-note span { color: var(--green); }
+
+    /* ═══ STATS BAR ═══ */
+    .stats-bar {
+      display: flex; justify-content: center; gap: 48px; flex-wrap: wrap;
+      padding: 32px; background: var(--card);
+      border-radius: 16px; border: 1px solid rgba(124,92,252,0.15);
+      margin: 60px 0;
+    }
+    .stat { text-align: center; }
+    .stat-num { font-size: 32px; font-weight: 800; color: var(--purple); display: block; }
+    .stat-lbl { font-size: 13px; color: var(--muted); }
+
+    /* ═══ SECTION TITLES ═══ */
+    .section-label {
+      text-align: center; color: var(--lpur);
+      font-size: 13px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; margin-bottom: 12px;
+    }
+    h2 {
+      font-size: clamp(28px, 4vw, 42px); font-weight: 800;
+      text-align: center; margin-bottom: 14px; line-height: 1.2;
+    }
+    .section-sub {
+      text-align: center; color: var(--muted); font-size: 17px;
+      max-width: 560px; margin: 0 auto 52px;
+    }
+
+    /* ═══ HOW IT WORKS ═══ */
+    .steps {
+      display: flex; gap: 0; align-items: flex-start;
+      flex-wrap: wrap; justify-content: center;
+    }
+    .step {
+      flex: 1; min-width: 140px; max-width: 180px;
+      text-align: center; padding: 0 12px; position: relative;
+    }
+    .step-icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--dpur); border: 2px solid rgba(124,92,252,0.5);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; margin: 0 auto 14px;
+    }
+    .step h3 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .step p { font-size: 13px; color: var(--muted); }
+    .step-arrow {
+      font-size: 20px; color: rgba(124,92,252,0.4);
+      align-self: center; padding: 0 4px;
+      flex-shrink: 0;
+    }
+
+    /* ═══ FEATURES GRID ═══ */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: var(--card); border: 1px solid rgba(124,92,252,0.15);
+      border-radius: 16px; padding: 28px 24px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .feature-card:hover { border-color: rgba(124,92,252,0.5); transform: translateY(-3px); }
+    .feature-icon { font-size: 30px; margin-bottom: 14px; }
+    .feature-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+    .feature-card p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+    /* ═══ WHY BEBO / COMPARISON ═══ */
+    .compare-table {
+      width: 100%; border-collapse: collapse; border-radius: 16px; overflow: hidden;
+    }
+    .compare-table th, .compare-table td {
+      padding: 14px 20px; text-align: left; font-size: 15px;
+    }
+    .compare-table thead tr { background: var(--dpur); }
+    .compare-table thead th { color: var(--lpur); font-weight: 700; font-size: 14px; }
+    .compare-table tbody tr:nth-child(odd) { background: var(--card); }
+    .compare-table tbody tr:nth-child(even) { background: var(--bg2); }
+    .compare-table td:first-child { color: var(--muted); }
+    .compare-table .bebo-col { color: var(--green); font-weight: 600; }
+    .compare-table .check { color: var(--green); }
+    .compare-table .cross { color: var(--muted); }
+
+    /* ═══ TECH STACK ═══ */
+    .tech-grid {
+      display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;
+    }
+    .tech-pill {
+      padding: 10px 22px; border-radius: 9999px;
+      border: 1.5px solid; font-weight: 600; font-size: 15px;
+    }
+
+    /* ═══ DOWNLOAD SECTION ═══ */
+    #download {
+      text-align: center;
+      background: linear-gradient(135deg, rgba(45,27,105,0.4) 0%, rgba(18,19,31,0) 100%);
+      border-top: 1px solid rgba(124,92,252,0.2);
+      border-bottom: 1px solid rgba(124,92,252,0.2);
+    }
+    .download-url {
+      display: inline-block; padding: 14px 28px; border-radius: 12px;
+      background: rgba(45,27,105,0.6); border: 1.5px solid rgba(167,139,250,0.5);
+      color: var(--lpur); font-family: 'Courier New', monospace; font-size: 15px;
+      font-weight: 600; margin: 24px 0; word-break: break-all;
+      text-decoration: underline; text-underline-offset: 4px;
+    }
+    .download-meta { color: var(--muted); font-size: 14px; margin-top: 12px; }
+
+    /* ═══ FOOTER ═══ */
+    footer {
+      padding: 40px 0; text-align: center;
+      border-top: 1px solid rgba(124,92,252,0.1);
+      color: var(--muted); font-size: 14px;
+    }
+    footer a { color: var(--lpur); }
+    footer .footer-links { display: flex; gap: 24px; justify-content: center; margin-bottom: 16px; }
+
+    /* ═══ RESPONSIVE ═══ */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .stats-bar { gap: 28px; }
+      .step-arrow { display: none; }
+      .compare-table th:nth-child(3), .compare-table td:nth-child(3) { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Background glows -->
+  <div class="glow glow-1" aria-hidden="true"></div>
+  <div class="glow glow-2" aria-hidden="true"></div>
+
+  <!-- ═══ NAV ═══ -->
+  <nav>
+    <div class="inner">
+      <div class="nav-logo">BEBO <span>the PET</span></div>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#why-bebo">Why BEBO</a>
+        <a href="#download">Download</a>
+        <a href="https://github.com/bhavik8025/BEBO-the-PET" target="_blank" rel="noopener">GitHub</a>
+      </div>
+      <a href="#download" class="btn btn-primary">Download Free</a>
+    </div>
+  </nav>
+
+  <!-- ═══ HERO ═══ -->
+  <section id="hero">
+    <div class="container">
+      <div class="badge">v1.0.0 — Free &amp; Open Source</div>
+      <h1>Your AI Desktop Companion.<br>Always On. Always Ready.</h1>
+      <p class="hero-sub">
+        <strong>BEBO the PET</strong> is a free AI desktop assistant for Windows.
+        A tiny animated robot that lives on your screen — powered by
+        <strong>Llama 3.3 70B</strong> and <strong>Groq</strong>.
+        One click. AI result in under 2 seconds.
+      </p>
+      <div class="hero-cta">
+        <a href="https://github.com/bhavik8025/BEBO-the-PET/releases/tag/v1.0.0"
+           class="btn btn-primary btn-lg" target="_blank" rel="noopener">
+          &#8659; Download for Windows — Free
+        </a>
+        <a href="https://github.com/bhavik8025/BEBO-the-PET"
+           class="btn btn-ghost btn-lg" target="_blank" rel="noopener">
+          View on GitHub
+        </a>
+      </div>
+      <p class="hero-note">
+        <span>&#10003;</span> No credit card &nbsp;
+        <span>&#10003;</span> No subscription &nbsp;
+        <span>&#10003;</span> No data stored &nbsp;
+        <span>&#10003;</span> 100% free forever
+      </p>
+
+      <!-- Stats -->
+      <div class="stats-bar">
+        <div class="stat">
+          <span class="stat-num">14,400</span>
+          <span class="stat-lbl">Free AI requests/day</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">&lt; 2s</span>
+          <span class="stat-lbl">AI response time</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">6</span>
+          <span class="stat-lbl">AI functions built-in</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">0</span>
+          <span class="stat-lbl">Browser tabs needed</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ HOW IT WORKS ═══ -->
+  <section id="how-it-works" style="background: var(--bg2);">
+    <div class="container">
+      <p class="section-label">How It Works</p>
+      <h2>AI in 5 Simple Steps</h2>
+      <p class="section-sub">No setup beyond a free API key. No browser. No tab switching. No loading screens.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-icon">&#129302;</div>
+          <h3>BEBO sits on your desktop</h3>
+          <p>Always visible, always on top — bottom right corner</p>
+        </div>
+        <div class="step-arrow">&#8594;</div>
+        <div class="step">
+          <div class="step-icon">&#128432;</div>
+          <h3>Click BEBO once</h3>
+          <p>Or press Ctrl+Shift+P from any app</p>
+        </div>
+        <div class="step-arrow">&#8594;</div>
+        <div class="step">
+          <div class="step-icon">&#128507;</div>
+          <h3>Panel opens instantly</h3>
+          <p>Right next to BEBO — no window hunt</p>
+        </div>
+        <div class="step-arrow">&#8594;</div>
+        <div class="step">
+          <div class="step-icon">&#128203;</div>
+          <h3>Paste text, pick action</h3>
+          <p>Summarize, email, grammar, and more</p>
+        </div>
+        <div class="step-arrow">&#8594;</div>
+        <div class="step">
+          <div class="step-icon">&#9889;</div>
+          <h3>AI result in 2 seconds</h3>
+          <p>Copy and use — done</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FEATURES ═══ -->
+  <section id="features">
+    <div class="container">
+      <p class="section-label">Features</p>
+      <h2>6 Powerful AI Functions — All Free</h2>
+      <p class="section-sub">Every feature runs on Llama 3.3 70B via Groq — the fastest free AI inference available.</p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">&#128221;</div>
+          <h3>Summarize</h3>
+          <p>Condense any article, report, or email into key points instantly. Perfect for research and reading digests.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#129505;</div>
+          <h3>Humanize</h3>
+          <p>Transform robotic AI-generated text into warm, genuine human writing that sounds like you.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#128269;</div>
+          <h3>Simplify</h3>
+          <p>Make complex legal, technical, or academic text instantly clear and easy to understand.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#128140;</div>
+          <h3>Draft Email</h3>
+          <p>Write professional, ready-to-send emails from rough notes or bullet points in seconds.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#9999;&#65039;</div>
+          <h3>Fix Grammar</h3>
+          <p>Fix all errors silently — spelling, punctuation, grammar — while preserving your voice and style.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#128172;</div>
+          <h3>Ask AI</h3>
+          <p>Free-form prompt — ask anything, get expert-level answers without switching to a browser.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ WHY BEBO ═══ -->
+  <section id="why-bebo" style="background: var(--bg2);">
+    <div class="container">
+      <p class="section-label">Why BEBO</p>
+      <h2>Faster Than Any Browser-Based AI Tool</h2>
+      <p class="section-sub">Compare the real workflow time — from "I need AI" to "I have my result."</p>
+
+      <table class="compare-table" role="table"
+             aria-label="Comparison of BEBO vs browser AI tools">
+        <thead>
+          <tr>
+            <th scope="col">Feature</th>
+            <th scope="col">BEBO the PET</th>
+            <th scope="col">ChatGPT / Gemini (browser)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Time to first result</td>
+            <td class="bebo-col">3–4 seconds total</td>
+            <td class="cross">12–15 seconds</td>
+          </tr>
+          <tr>
+            <td>Always on screen</td>
+            <td class="bebo-col check">&#10003; Yes — no switching</td>
+            <td class="cross">&#10007; Open browser first</td>
+          </tr>
+          <tr>
+            <td>Daily free requests</td>
+            <td class="bebo-col">14,400 / day</td>
+            <td class="cross">Limited or paid</td>
+          </tr>
+          <tr>
+            <td>Credit card required</td>
+            <td class="bebo-col check">&#10003; No</td>
+            <td class="cross">Often yes for full access</td>
+          </tr>
+          <tr>
+            <td>Data stored / logged</td>
+            <td class="bebo-col check">&#10003; Never — stateless</td>
+            <td class="cross">Yes (chat history)</td>
+          </tr>
+          <tr>
+            <td>Works in any app</td>
+            <td class="bebo-col check">&#10003; Global hotkey</td>
+            <td class="cross">Must alt-tab to browser</td>
+          </tr>
+          <tr>
+            <td>Cost</td>
+            <td class="bebo-col">100% Free</td>
+            <td class="cross">Free tier limited</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══ KEYBOARD SHORTCUTS ═══ -->
+  <section id="shortcuts">
+    <div class="container" style="max-width: 640px;">
+      <p class="section-label">Keyboard Shortcuts</p>
+      <h2>Control BEBO from Anywhere</h2>
+      <p class="section-sub">Global shortcuts work inside any app — Excel, Word, browser, anywhere.</p>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--card); padding:16px 24px; border-radius:12px; border:1px solid rgba(124,92,252,0.2);">
+          <span style="color:var(--muted); font-size:15px;">Wake up BEBO</span>
+          <kbd style="background:var(--dpur); color:var(--purple); padding:6px 14px; border-radius:8px; font-family:monospace; font-weight:700; border:1px solid rgba(124,92,252,0.4);">Ctrl + Shift + W</kbd>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--card); padding:16px 24px; border-radius:12px; border:1px solid rgba(251,191,36,0.2);">
+          <span style="color:var(--muted); font-size:15px;">Hide BEBO</span>
+          <kbd style="background:rgba(251,191,36,0.1); color:var(--yellow); padding:6px 14px; border-radius:8px; font-family:monospace; font-weight:700; border:1px solid rgba(251,191,36,0.4);">Ctrl + Shift + H</kbd>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--card); padding:16px 24px; border-radius:12px; border:1px solid rgba(16,185,129,0.2);">
+          <span style="color:var(--muted); font-size:15px;">Show / Hide Panel</span>
+          <kbd style="background:rgba(16,185,129,0.1); color:var(--green); padding:6px 14px; border-radius:8px; font-family:monospace; font-weight:700; border:1px solid rgba(16,185,129,0.4);">Ctrl + Shift + P</kbd>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ TECH STACK ═══ -->
+  <section style="background: var(--bg2);">
+    <div class="container">
+      <p class="section-label">Tech Stack</p>
+      <h2>Built on a Modern, Lightweight Stack</h2>
+      <p class="section-sub">Free to run. No server. No cloud dependency. Everything stays on your machine.</p>
+
+      <div class="tech-grid">
+        <div class="tech-pill" style="color:var(--purple); border-color:rgba(124,92,252,0.5);">Electron v29</div>
+        <div class="tech-pill" style="color:var(--cyan); border-color:rgba(34,211,238,0.5);">Groq API</div>
+        <div class="tech-pill" style="color:var(--green); border-color:rgba(16,185,129,0.5);">Llama 3.3 70B</div>
+        <div class="tech-pill" style="color:var(--yellow); border-color:rgba(251,191,36,0.5);">Node.js</div>
+        <div class="tech-pill" style="color:var(--lpur); border-color:rgba(167,139,250,0.5);">HTML / CSS / JS</div>
+        <div class="tech-pill" style="color:var(--orange); border-color:rgba(251,146,60,0.5);">Windows 10 / 11</div>
+      </div>
+
+      <p style="text-align:center; margin-top:32px; color:var(--muted); font-size:14px;">
+        800–1000 tokens/second via Groq &nbsp;·&nbsp;
+        14,400 free requests/day &nbsp;·&nbsp;
+        No credit card &nbsp;·&nbsp;
+        Stateless — zero data stored
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══ DOWNLOAD ═══ -->
+  <section id="download">
+    <div class="container">
+      <p class="section-label">Download</p>
+      <h2>Download BEBO the PET — Free Forever</h2>
+      <p class="section-sub">Windows 10 and 11. Installer and portable EXE both available.</p>
+
+      <a href="https://github.com/bhavik8025/BEBO-the-PET/releases/tag/v1.0.0"
+         class="download-url" target="_blank" rel="noopener"
+         aria-label="Download BEBO the PET v1.0.0 from GitHub Releases">
+        github.com/bhavik8025/BEBO-the-PET/releases/tag/v1.0.0
+      </a>
+
+      <br>
+      <a href="https://github.com/bhavik8025/BEBO-the-PET/releases/tag/v1.0.0"
+         class="btn btn-primary btn-lg" target="_blank" rel="noopener"
+         style="display:inline-flex; margin-bottom: 16px;">
+        &#8659; &nbsp; Download BEBO.the.PET.Setup.1.0.0.exe
+      </a>
+
+      <p class="download-meta">
+        Version 1.0.0 &nbsp;·&nbsp; Windows 10 / 11 &nbsp;·&nbsp; Free &amp; Open Source &nbsp;·&nbsp;
+        <a href="https://github.com/bhavik8025/BEBO-the-PET" target="_blank" rel="noopener">View source on GitHub</a>
+      </p>
+
+      <div style="margin-top: 40px; background: var(--card); border-radius: 16px; padding: 28px; border: 1px solid rgba(124,92,252,0.15); max-width: 560px; margin-left: auto; margin-right: auto; text-align: left;">
+        <h3 style="font-size: 17px; margin-bottom: 14px; color: var(--lpur);">Quick Setup (under 2 minutes)</h3>
+        <ol style="color: var(--muted); font-size: 15px; padding-left: 20px; line-height: 2;">
+          <li>Download and run <strong style="color:var(--text);">BEBO.the.PET.Setup.1.0.0.exe</strong></li>
+          <li>Get a free API key at <a href="https://groq.com" target="_blank" rel="noopener">groq.com</a> (30 seconds, no card)</li>
+          <li>Paste your key and click <strong style="color:var(--text);">Verify &amp; Launch</strong></li>
+          <li>BEBO appears on your desktop — click to start!</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer>
+    <div class="container">
+      <div class="footer-links">
+        <a href="https://github.com/bhavik8025/BEBO-the-PET" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/bhavik8025/BEBO-the-PET/releases/tag/v1.0.0" target="_blank" rel="noopener">Download</a>
+        <a href="https://github.com/bhavik8025/BEBO-the-PET/issues" target="_blank" rel="noopener">Report Issue</a>
+      </div>
+      <p>
+        Built by <strong>Bhavik Thakkar</strong> &nbsp;·&nbsp;
+        Lal Bahadur Shastri Institute of Management &nbsp;·&nbsp;
+        <a href="mailto:bhavikthakkar8025@gmail.com">bhavikthakkar8025@gmail.com</a>
+      </p>
+      <p style="margin-top: 8px;">
+        Powered by Electron &nbsp;·&nbsp; Groq &nbsp;·&nbsp; Llama 3.3 70B &nbsp;·&nbsp; Claude AI
+      </p>
+      <p style="margin-top: 8px; font-size: 12px;">
+        &copy; 2026 BEBO the PET. Free and open source under MIT License.
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>
