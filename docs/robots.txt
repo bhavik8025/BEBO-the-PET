@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bhavik8025.github.io/BEBO-the-PET/sitemap.xml
