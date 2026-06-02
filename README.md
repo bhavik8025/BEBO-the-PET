@@ -2,6 +2,9 @@
 
 > A tiny animated AI pet that lives on your Windows desktop. Click it, get superpowers.
 
+**Website:** https://bhavik8025.github.io/BEBO-the-PET/  
+**Download:** https://github.com/bhavik8025/BEBO-the-PET/releases/tag/v1.0.0
+
 ---
 
 ## What is BEBO?
