@@ -5,3 +5,4 @@ out/
 *.log
 data/*.db
 data/*.sqlite
+ROADMAP.md
