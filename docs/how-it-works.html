@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How BEBO Works — Electron + Groq AI Desktop Assistant Architecture</title>
+  <meta name="description" content="How BEBO the PET works under the hood: dual-window Electron architecture, Llama 3.3 70B via Groq at 800+ tokens/sec, structured prompt engineering, and global Windows shortcuts." />
+  <link rel="canonical" href="https://bhavik8025.github.io/BEBO-the-PET/how-it-works.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="How BEBO Works — AI Desktop Assistant Architecture" />
+  <meta property="og:description" content="Dual-window Electron architecture, Groq-powered Llama 3.3 70B, structured prompt engine and global shortcuts — the full technical story of BEBO the PET." />
+  <meta property="og:url" content="https://bhavik8025.github.io/BEBO-the-PET/how-it-works.html" />
+  <meta property="og:image" content="https://bhavik8025.github.io/BEBO-the-PET/bebo-avatar.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "How BEBO the PET Works — Electron + Groq AI Desktop Assistant Architecture",
+    "description": "Technical breakdown of BEBO the PET: dual-window Electron architecture, Llama 3.3 70B via Groq, structured prompt engineering and global Windows shortcuts.",
+    "author": {"@type": "Person", "name": "Bhavik Thakkar"},
+    "image": "https://bhavik8025.github.io/BEBO-the-PET/bebo-avatar.png",
+    "mainEntityOfPage": "https://bhavik8025.github.io/BEBO-the-PET/how-it-works.html"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://bhavik8025.github.io/BEBO-the-PET/"},
+      {"@type": "ListItem", "position": 2, "name": "How It Works", "item": "https://bhavik8025.github.io/BEBO-the-PET/how-it-works.html"}
+    ]
+  }
+  </script>
+
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#12131f;--bg2:#16172a;--card:#1a1c2e;--purple:#7c5cfc;--lpur:#a78bfa;--dpur:#2d1b69;--text:#eef2ff;--muted:#8b8fa8;--cyan:#22d3ee;--green:#10b981;--yellow:#fbbf24}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;line-height:1.65}
+    a{color:var(--lpur);text-decoration:none}
+    a:hover{color:var(--purple)}
+    .container{max-width:860px;margin:0 auto;padding:0 24px}
+    nav{position:sticky;top:0;z-index:100;background:rgba(18,19,31,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(124,92,252,.18);padding:13px 0}
+    nav .inner{max-width:1000px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{font-weight:800;font-size:17px;color:var(--text);display:flex;align-items:center;gap:10px}
+    .nav-logo img{width:32px;height:32px;object-fit:contain}
+    .nav-logo span{color:var(--lpur)}
+    .nav-links{display:flex;gap:22px;align-items:center}
+    .nav-links a{color:var(--muted);font-size:14px}
+    .nav-links a:hover{color:var(--text)}
+    .nav-links a.active{color:var(--lpur);font-weight:600}
+    .crumbs{font-size:13px;color:var(--muted);margin:28px 0 0}
+    h1{font-size:clamp(30px,4.5vw,44px);font-weight:800;margin:16px 0 10px;background:linear-gradient(135deg,var(--text) 0%,var(--lpur) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .sub{color:var(--muted);font-size:16px;margin-bottom:44px}
+    h2{font-size:26px;font-weight:800;margin:52px 0 14px;color:var(--text)}
+    h2 .tag{color:var(--lpur)}
+    p{color:var(--muted);font-size:15px;margin-bottom:14px}
+    p strong{color:var(--text)}
+    .card{background:var(--card);border:1px solid rgba(124,92,252,.15);border-radius:14px;padding:22px;margin:18px 0}
+    .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:20px 0}
+    .flow-step{flex:1;min-width:140px;background:var(--card);border:1px solid rgba(124,92,252,.2);border-radius:12px;padding:16px 14px;text-align:center}
+    .flow-step .n{display:inline-flex;width:28px;height:28px;border-radius:50%;background:var(--dpur);color:var(--lpur);font-weight:800;font-size:13px;align-items:center;justify-content:center;margin-bottom:8px}
+    .flow-step h3{font-size:13px;margin-bottom:4px}
+    .flow-step p{font-size:12px;margin:0}
+    pre{background:#0d0e18;border:1px solid rgba(124,92,252,.2);border-radius:12px;padding:18px;overflow-x:auto;font-size:13px;line-height:1.7;color:var(--muted);margin:18px 0}
+    pre .k{color:var(--lpur)}
+    pre .c{color:#4a4e69}
+    table{width:100%;border-collapse:collapse;border-radius:12px;overflow:hidden;margin:18px 0;font-size:14px}
+    th,td{padding:11px 16px;text-align:left}
+    thead tr{background:var(--dpur)}
+    thead th{color:var(--lpur);font-weight:700;font-size:13px}
+    tbody tr:nth-child(odd){background:var(--card)}
+    tbody tr:nth-child(even){background:var(--bg2)}
+    td:first-child{color:var(--text);font-weight:600}
+    td{color:var(--muted)}
+    .hl{color:var(--green);font-weight:700}
+    kbd{background:var(--dpur);color:var(--lpur);padding:3px 10px;border-radius:6px;font-family:monospace;font-weight:700;font-size:13px;border:1px solid rgba(124,92,252,.4)}
+    .cta-box{margin:56px 0 48px;text-align:center;background:var(--card);border:1px solid rgba(124,92,252,.25);border-radius:18px;padding:36px 24px}
+    .cta-box img{width:90px;margin-bottom:14px;filter:drop-shadow(0 0 24px rgba(124,92,252,.5))}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:9999px;font-weight:600;font-size:16px;background:var(--purple);color:#fff;transition:all .2s}
+    .btn:hover{background:var(--lpur);color:var(--bg);transform:translateY(-2px)}
+    .explore{margin:48px 0;padding-top:32px;border-top:1px solid rgba(124,92,252,.12)}
+    .explore h2{font-size:18px;margin:0 0 16px;color:var(--lpur)}
+    .explore-links{display:flex;flex-wrap:wrap;gap:12px}
+    .explore-links a{background:var(--card);border:1px solid rgba(124,92,252,.2);padding:10px 20px;border-radius:9999px;font-size:14px;color:var(--text)}
+    .explore-links a:hover{border-color:var(--lpur)}
+    footer{padding:32px 0;text-align:center;border-top:1px solid rgba(124,92,252,.1);color:var(--muted);font-size:13px;margin-top:40px}
+    @media(max-width:640px){.nav-links{display:none}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="index.html" class="nav-logo"><img src="bebo-avatar.png" alt="BEBO avatar" />BEBO <span>the PET</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="how-it-works.html" class="active">How It Works</a>
+      <a href="compare.html">Compare</a>
+      <a href="faq.html">FAQ</a>
+      <a href="download.html">Download</a>
+      <a href="https://github.com/bhavik8025/BEBO-the-PET" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <p class="crumbs"><a href="index.html">Home</a> › How It Works</p>
+  <h1>How BEBO Works</h1>
+  <p class="sub">The full technical story — how a tiny desktop robot delivers AI results in under 2 seconds on Windows.</p>
+
+  <h2><span class="tag">01.</span> The User Flow</h2>
+  <p>BEBO removes every step between "I need AI" and "I have my result". The complete flow:</p>
+  <div class="flow">
+    <div class="flow-step"><span class="n">1</span><h3>BEBO sits on your desktop</h3><p>Always on top, always visible</p></div>
+    <div class="flow-step"><span class="n">2</span><h3>You click BEBO</h3><p>Or press Ctrl+Shift+P anywhere</p></div>
+    <div class="flow-step"><span class="n">3</span><h3>Panel opens</h3><p>Right next to the pet</p></div>
+    <div class="flow-step"><span class="n">4</span><h3>Paste text, pick action</h3><p>6 one-click AI functions</p></div>
+    <div class="flow-step"><span class="n">5</span><h3>Result in ~2 seconds</h3><p>Edit, copy, done</p></div>
+  </div>
+
+  <h2><span class="tag">02.</span> Dual-Window Electron Architecture</h2>
+  <p>BEBO is a native Windows app built with <strong>Electron v29</strong>. It runs two separate windows that talk to each other through a secure IPC bridge:</p>
+  <pre>
+<span class="k">Main Process (Node.js)</span>
+├── index.js          <span class="c">— entry point, app lifecycle</span>
+├── windows.js        <span class="c">— creates pet + panel windows</span>
+├── ipc-router.js     <span class="c">— routes events between windows</span>
+├── ai-service.js     <span class="c">— Groq API calls + prompt engine</span>
+├── shortcuts.js      <span class="c">— global hotkeys</span>
+└── tray.js           <span class="c">— system tray icon</span>
+
+<span class="k">Renderer Process</span>
+├── Pet Window        <span class="c">— 92x116px, transparent, always on top</span>
+└── Panel Window      <span class="c">— 380x620px, dark theme, 6 AI actions</span></pre>
+  <p>The pet window is tiny, transparent and click-through-resistant — it floats above every app. When clicked, it asks the main process to open the panel window <strong>right next to the pet's current position</strong>, clamped to your screen's work area so it never opens off-screen.</p>
+  <p>Security: both renderers run with <strong>contextIsolation enabled</strong> and talk to Node.js only through narrow preload bridges — the same pattern used by production Electron apps like VS Code and Slack.</p>
+
+  <h2><span class="tag">03.</span> Why Groq + Llama 3.3 70B</h2>
+  <p>BEBO's promise is speed, so the model choice was driven by one number: <strong>tokens per second</strong>.</p>
+  <table>
+    <thead><tr><th>Model</th><th>Tokens / sec</th><th>200-token task</th><th>Free tier</th></tr></thead>
+    <tbody>
+      <tr><td>Llama 3.3 70B via Groq</td><td class="hl">800–1000</td><td class="hl">0.3–0.5s</td><td class="hl">14,400 req/day</td></tr>
+      <tr><td>Gemini 1.5 Flash</td><td>~200</td><td>1.0–1.5s</td><td>Limited</td></tr>
+      <tr><td>GPT-4o</td><td>80–100</td><td>2.0–3.0s</td><td>Very limited</td></tr>
+      <tr><td>Claude Sonnet</td><td>80–100</td><td>2.0–3.0s</td><td>Limited</td></tr>
+    </tbody>
+  </table>
+  <p>Groq's custom LPU hardware serves Llama 3.3 70B roughly <strong>10x faster than GPU-based APIs</strong>. For productivity tasks — summarizing, grammar, email drafting — output quality is equivalent to the best paid models, and the free tier needs no credit card.</p>
+
+  <h2><span class="tag">04.</span> The Prompt Engine</h2>
+  <p>Every one of BEBO's 6 functions uses a structured 4-layer prompt instead of a naive instruction:</p>
+  <div class="card">
+    <p style="margin-bottom:8px;"><strong style="color:var(--purple)">ROLE</strong> — sets expert framing: tells the model exactly who it is</p>
+    <p style="margin-bottom:8px;"><strong style="color:var(--cyan)">OBJECTIVE</strong> — defines what the task must accomplish</p>
+    <p style="margin-bottom:8px;"><strong style="color:var(--green)">CONTEXT</strong> — explains the user's situation and needs</p>
+    <p style="margin-bottom:0;"><strong style="color:var(--yellow)">INSTRUCTIONS</strong> — precise rules: format, tone, length, what to avoid</p>
+  </div>
+  <p>Temperature is tuned per task — deterministic where accuracy matters, creative where it helps:</p>
+  <table>
+    <thead><tr><th>Function</th><th>Temperature</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Fix Grammar</td><td>0.05</td><td>Fully deterministic — no creative drift</td></tr>
+      <tr><td>Summarize</td><td>0.20</td><td>Accurate, minimal variation</td></tr>
+      <tr><td>Draft Email</td><td>0.25</td><td>Structured, professional output</td></tr>
+      <tr><td>Simplify</td><td>0.30</td><td>Clear rewording with slight freedom</td></tr>
+      <tr><td>Ask AI</td><td>0.50</td><td>Balanced general answers</td></tr>
+      <tr><td>Humanize</td><td>0.65</td><td>Natural, creative variation</td></tr>
+    </tbody>
+  </table>
+  <p>Every response also passes through a <strong>stripMarkdown()</strong> post-processor, so the output is always clean plain text — ready to paste anywhere without stray asterisks or formatting noise.</p>
+
+  <h2><span class="tag">05.</span> Global Shortcuts</h2>
+  <p>Three system-wide hotkeys registered through Electron's globalShortcut API — they work inside any app: Word, Excel, your browser, anywhere on Windows.</p>
+  <table>
+    <thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>Ctrl + Shift + W</kbd></td><td>Wake up BEBO</td></tr>
+      <tr><td><kbd>Ctrl + Shift + H</kbd></td><td>Hide BEBO</td></tr>
+      <tr><td><kbd>Ctrl + Shift + P</kbd></td><td>Show / hide the assistant panel</td></tr>
+    </tbody>
+  </table>
+
+  <h2><span class="tag">06.</span> Privacy by Architecture</h2>
+  <p>BEBO is <strong>stateless by design</strong>. There is no account, no database, no telemetry. Your text travels directly from your machine to the Groq API over HTTPS and the result comes back — nothing is stored anywhere in between. The only thing saved locally is your own API key. The entire source code is <a href="https://github.com/bhavik8025/BEBO-the-PET" target="_blank" rel="noopener">public on GitHub</a>, so none of this requires trust — you can read it.</p>
+
+  <div class="cta-box">
+    <img src="bebo-avatar.png" alt="BEBO the PET robot" />
+    <h2 style="margin:0 0 8px;">See it in action on your own desktop</h2>
+    <p style="margin-bottom:22px;">Free forever. Setup takes under 2 minutes.</p>
+    <a class="btn" href="https://github.com/bhavik8025/BEBO-the-PET/releases/tag/v1.0.0" target="_blank" rel="noopener">&#8659; Download BEBO Free</a>
+  </div>
+
+  <div class="explore">
+    <h2>Explore more</h2>
+    <div class="explore-links">
+      <a href="index.html">&#127968; Home</a>
+      <a href="compare.html">&#9889; BEBO vs Browser AI</a>
+      <a href="faq.html">&#10067; FAQ</a>
+      <a href="download.html">&#8659; Download &amp; Setup</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>Built by <strong>Bhavik Thakkar</strong> · Lal Bahadur Shastri Institute of Management · <a href="mailto:bhavikthakkar8025@gmail.com">bhavikthakkar8025@gmail.com</a></p>
+    <p style="margin-top:6px;">&copy; 2026 BEBO the PET · Free &amp; Open Source · MIT License</p>
+  </div>
+</footer>
+
+</body>
+</html>

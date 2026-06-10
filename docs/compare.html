@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BEBO vs ChatGPT, Gemini &amp; Claude in Browser — Speed &amp; Workflow Comparison</title>
+  <meta name="description" content="Honest comparison: BEBO the PET vs ChatGPT, Gemini and Claude in a browser. Workflow speed, free limits, privacy and when each tool wins. BEBO completes tasks 4x faster." />
+  <link rel="canonical" href="https://bhavik8025.github.io/BEBO-the-PET/compare.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="BEBO vs Browser AI Tools — Honest Comparison" />
+  <meta property="og:description" content="Workflow speed, free limits, privacy — when BEBO wins and when browser AI tools win." />
+  <meta property="og:url" content="https://bhavik8025.github.io/BEBO-the-PET/compare.html" />
+  <meta property="og:image" content="https://bhavik8025.github.io/BEBO-the-PET/bebo-avatar.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "BEBO vs ChatGPT, Gemini and Claude in Browser — Speed and Workflow Comparison",
+    "description": "Honest comparison of BEBO the PET against browser-based AI tools: workflow speed, free limits, privacy, and when each tool wins.",
+    "author": {"@type": "Person", "name": "Bhavik Thakkar"},
+    "image": "https://bhavik8025.github.io/BEBO-the-PET/bebo-avatar.png",
+    "mainEntityOfPage": "https://bhavik8025.github.io/BEBO-the-PET/compare.html"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://bhavik8025.github.io/BEBO-the-PET/"},
+      {"@type": "ListItem", "position": 2, "name": "Compare", "item": "https://bhavik8025.github.io/BEBO-the-PET/compare.html"}
+    ]
+  }
+  </script>
+
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#12131f;--bg2:#16172a;--card:#1a1c2e;--purple:#7c5cfc;--lpur:#a78bfa;--dpur:#2d1b69;--text:#eef2ff;--muted:#8b8fa8;--green:#10b981;--red:#ef4444}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;line-height:1.65}
+    a{color:var(--lpur);text-decoration:none}
+    a:hover{color:var(--purple)}
+    .container{max-width:860px;margin:0 auto;padding:0 24px}
+    nav{position:sticky;top:0;z-index:100;background:rgba(18,19,31,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(124,92,252,.18);padding:13px 0}
+    nav .inner{max-width:1000px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{font-weight:800;font-size:17px;color:var(--text);display:flex;align-items:center;gap:10px}
+    .nav-logo img{width:32px;height:32px;object-fit:contain}
+    .nav-logo span{color:var(--lpur)}
+    .nav-links{display:flex;gap:22px;align-items:center}
+    .nav-links a{color:var(--muted);font-size:14px}
+    .nav-links a:hover{color:var(--text)}
+    .nav-links a.active{color:var(--lpur);font-weight:600}
+    .crumbs{font-size:13px;color:var(--muted);margin:28px 0 0}
+    h1{font-size:clamp(28px,4.5vw,42px);font-weight:800;margin:16px 0 10px;background:linear-gradient(135deg,var(--text) 0%,var(--lpur) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .sub{color:var(--muted);font-size:16px;margin-bottom:44px}
+    h2{font-size:24px;font-weight:800;margin:48px 0 14px}
+    p{color:var(--muted);font-size:15px;margin-bottom:14px}
+    p strong{color:var(--text)}
+    table{width:100%;border-collapse:collapse;border-radius:12px;overflow:hidden;margin:18px 0;font-size:14px}
+    th,td{padding:12px 16px;text-align:left}
+    thead tr{background:var(--dpur)}
+    thead th{color:var(--lpur);font-weight:700;font-size:13px}
+    tbody tr:nth-child(odd){background:var(--card)}
+    tbody tr:nth-child(even){background:var(--bg2)}
+    td:first-child{color:var(--text)}
+    td{color:var(--muted)}
+    .win{color:var(--green);font-weight:700}
+    .lose{color:var(--muted)}
+    .verdict{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}
+    .v-card{border-radius:14px;padding:22px}
+    .v-win{background:rgba(6,95,70,.35);border:1px solid rgba(16,185,129,.4)}
+    .v-other{background:rgba(31,41,55,.5);border:1px solid rgba(75,85,99,.5)}
+    .v-card h3{font-size:17px;margin-bottom:10px}
+    .v-win h3{color:var(--green)}
+    .v-other h3{color:#9ca3af}
+    .v-card ul{padding-left:18px;color:var(--muted);font-size:14px}
+    .v-card li{margin-bottom:6px}
+    .timeline{margin:20px 0}
+    .t-row{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid rgba(124,92,252,.12);border-radius:12px;padding:16px 20px;margin-bottom:10px}
+    .t-row.hero{border-color:rgba(124,92,252,.5);background:rgba(45,27,105,.3)}
+    .t-name{width:170px;flex-shrink:0;font-size:14px;font-weight:600}
+    .t-name .s{display:block;font-size:11px;color:var(--muted);font-weight:400}
+    .t-track{flex:1;height:8px;border-radius:9999px;background:rgba(124,92,252,.12);overflow:hidden}
+    .t-fill{height:100%;border-radius:9999px}
+    .t-time{width:80px;text-align:right;font-weight:700;font-size:14px;flex-shrink:0}
+    .cta-box{margin:56px 0 48px;text-align:center;background:var(--card);border:1px solid rgba(124,92,252,.25);border-radius:18px;padding:36px 24px}
+    .cta-box img{width:90px;margin-bottom:14px;filter:drop-shadow(0 0 24px rgba(124,92,252,.5))}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:9999px;font-weight:600;font-size:16px;background:var(--purple);color:#fff;transition:all .2s}
+    .btn:hover{background:var(--lpur);color:var(--bg);transform:translateY(-2px)}
+    .explore{margin:48px 0;padding-top:32px;border-top:1px solid rgba(124,92,252,.12)}
+    .explore h2{font-size:18px;margin:0 0 16px;color:var(--lpur)}
+    .explore-links{display:flex;flex-wrap:wrap;gap:12px}
+    .explore-links a{background:var(--card);border:1px solid rgba(124,92,252,.2);padding:10px 20px;border-radius:9999px;font-size:14px;color:var(--text)}
+    .explore-links a:hover{border-color:var(--lpur)}
+    footer{padding:32px 0;text-align:center;border-top:1px solid rgba(124,92,252,.1);color:var(--muted);font-size:13px;margin-top:40px}
+    @media(max-width:640px){.nav-links{display:none}.verdict{grid-template-columns:1fr}.t-name{width:110px}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="index.html" class="nav-logo"><img src="bebo-avatar.png" alt="BEBO avatar" />BEBO <span>the PET</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="how-it-works.html">How It Works</a>
+      <a href="compare.html" class="active">Compare</a>
+      <a href="faq.html">FAQ</a>
+      <a href="download.html">Download</a>
+      <a href="https://github.com/bhavik8025/BEBO-the-PET" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <p class="crumbs"><a href="index.html">Home</a> › Compare</p>
+  <h1>BEBO vs Browser AI Tools</h1>
+  <p class="sub">An honest comparison against ChatGPT, Gemini and Claude in a browser — including where they beat BEBO.</p>
+
+  <h2>Real Workflow Speed</h2>
+  <p>This measures the <strong>complete task</strong> — from the moment you need AI to the moment you have your result copied. Browser numbers assume the browser is already open.</p>
+  <div class="timeline">
+    <div class="t-row hero">
+      <div class="t-name">BEBO the PET<span class="s">always on screen</span></div>
+      <div class="t-track"><div class="t-fill" style="width:26%;background:linear-gradient(90deg,var(--purple),var(--lpur))"></div></div>
+      <div class="t-time" style="color:var(--green)">3–4 s</div>
+    </div>
+    <div class="t-row">
+      <div class="t-name">Gemini<span class="s">browser tab</span></div>
+      <div class="t-track"><div class="t-fill" style="width:88%;background:rgba(139,143,168,.4)"></div></div>
+      <div class="t-time lose">11–14 s</div>
+    </div>
+    <div class="t-row">
+      <div class="t-name">ChatGPT<span class="s">browser tab</span></div>
+      <div class="t-track"><div class="t-fill" style="width:100%;background:rgba(139,143,168,.4)"></div></div>
+      <div class="t-time lose">12–15 s</div>
+    </div>
+    <div class="t-row">
+      <div class="t-name">Claude<span class="s">browser tab</span></div>
+      <div class="t-track"><div class="t-fill" style="width:100%;background:rgba(139,143,168,.4)"></div></div>
+      <div class="t-time lose">12–15 s</div>
+    </div>
+  </div>
+  <p>Why the gap? Browser tools cost you <strong>context switching</strong>: alt-tab, find the tab, wait for load, scroll, type, copy, switch back. BEBO's panel is already on screen — the only time spent is the AI inference itself. The technical details are on the <a href="how-it-works.html">how it works page</a>.</p>
+
+  <h2>Feature by Feature</h2>
+  <table>
+    <thead><tr><th>Feature</th><th>BEBO the PET</th><th>ChatGPT / Gemini / Claude (browser, free)</th></tr></thead>
+    <tbody>
+      <tr><td>Time to first result</td><td class="win">3–4 seconds</td><td class="lose">12–15 seconds</td></tr>
+      <tr><td>Always on screen</td><td class="win">Yes — floats above every app</td><td class="lose">No — lives in a tab</td></tr>
+      <tr><td>Free requests per day</td><td class="win">14,400</td><td class="lose">Limited free quota</td></tr>
+      <tr><td>Credit card needed</td><td class="win">Never</td><td class="lose">For full access, usually yes</td></tr>
+      <tr><td>Chat history stored</td><td class="win">Nothing stored — stateless</td><td class="lose">Yes, on their servers</td></tr>
+      <tr><td>Account required</td><td class="win">No account at all</td><td class="lose">Yes</td></tr>
+      <tr><td>Works via global hotkey</td><td class="win">Yes — Ctrl+Shift+P anywhere</td><td class="lose">No</td></tr>
+      <tr><td>Output always plain text</td><td class="win">Yes — auto-stripped</td><td class="lose">Markdown noise to clean up</td></tr>
+      <tr><td>Open source</td><td class="win">Yes — MIT license</td><td class="lose">No</td></tr>
+    </tbody>
+  </table>
+
+  <h2>The Honest Verdict</h2>
+  <p>No tool wins everything. Here is the truth:</p>
+  <div class="verdict">
+    <div class="v-card v-win">
+      <h3>&#10003; Where BEBO wins</h3>
+      <ul>
+        <li>Everyday text tasks: summarize, email, grammar, simplify</li>
+        <li>Speed — 4x faster complete workflow</li>
+        <li>Zero context switching, always one click away</li>
+        <li>Privacy — nothing stored, no account</li>
+        <li>Truly free at high volume (14,400/day)</li>
+      </ul>
+    </div>
+    <div class="v-card v-other">
+      <h3>&#10007; Where browser tools win</h3>
+      <ul>
+        <li>Long multi-turn conversations with memory</li>
+        <li>Complex reasoning and coding sessions</li>
+        <li>Image understanding and file uploads</li>
+        <li>Web search and real-time data</li>
+        <li>Very long documents beyond context limits</li>
+      </ul>
+    </div>
+  </div>
+  <p><strong>The practical answer:</strong> they are not competitors — they are layers. Keep ChatGPT or Claude for deep sessions, and let BEBO handle the 20 small AI moments per day where opening a browser is overkill. More common questions are answered in the <a href="faq.html">FAQ</a>.</p>
+
+  <div class="cta-box">
+    <img src="bebo-avatar.png" alt="BEBO the PET robot" />
+    <h2 style="margin:0 0 8px;">Feel the speed difference yourself</h2>
+    <p style="margin-bottom:22px;">Free forever. No account. Under 2 minutes to set up.</p>
+    <a class="btn" href="https://github.com/bhavik8025/BEBO-the-PET/releases/tag/v1.0.0" target="_blank" rel="noopener">&#8659; Download BEBO Free</a>
+  </div>
+
+  <div class="explore">
+    <h2>Explore more</h2>
+    <div class="explore-links">
+      <a href="index.html">&#127968; Home</a>
+      <a href="how-it-works.html">&#9881; How BEBO Works</a>
+      <a href="faq.html">&#10067; FAQ</a>
+      <a href="download.html">&#8659; Download &amp; Setup</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>Built by <strong>Bhavik Thakkar</strong> · Lal Bahadur Shastri Institute of Management · <a href="mailto:bhavikthakkar8025@gmail.com">bhavikthakkar8025@gmail.com</a></p>
+    <p style="margin-top:6px;">&copy; 2026 BEBO the PET · Free &amp; Open Source · MIT License</p>
+  </div>
+</footer>
+
+</body>
+</html>
