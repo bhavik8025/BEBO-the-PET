@@ -29,16 +29,45 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "BEBO the PET",
-    "operatingSystem": "Windows",
-    "applicationCategory": "ProductivityApplication",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "description": "BEBO the PET is a free, open-source AI desktop assistant for Windows. A tiny animated robot that lives on your screen — powered by Llama 3.3 70B and Groq API.",
-    "softwareVersion": "1.0.0",
-    "author": { "@type": "Person", "name": "Bhavik Thakkar" },
-    "downloadUrl": "https://github.com/bhavik8025/BEBO-the-PET/releases/tag/v1.0.0",
-    "url": "https://bhavik8025.github.io/BEBO-the-PET/"
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://bhavik8025.github.io/BEBO-the-PET/#website",
+        "name": "BEBO the PET",
+        "alternateName": "BEBO",
+        "url": "https://bhavik8025.github.io/BEBO-the-PET/",
+        "description": "Free AI desktop assistant for Windows, powered by Llama 3.3 70B and Groq.",
+        "publisher": { "@id": "https://bhavik8025.github.io/BEBO-the-PET/#person" },
+        "inLanguage": "en"
+      },
+      {
+        "@type": "Person",
+        "@id": "https://bhavik8025.github.io/BEBO-the-PET/#person",
+        "name": "Bhavik Thakkar",
+        "url": "https://bhavik8025.github.io/BEBO-the-PET/",
+        "sameAs": [
+          "https://github.com/bhavik8025",
+          "https://github.com/bhavik8025/BEBO-the-PET"
+        ]
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://bhavik8025.github.io/BEBO-the-PET/#software",
+        "name": "BEBO the PET",
+        "operatingSystem": "Windows 10, Windows 11",
+        "applicationCategory": "ProductivityApplication",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "description": "BEBO the PET is a free, open-source AI desktop assistant for Windows. A tiny animated robot that lives on your screen — powered by Llama 3.3 70B and Groq API. Summarize, draft emails, fix grammar, simplify and humanize text in under 2 seconds.",
+        "softwareVersion": "1.0.0",
+        "datePublished": "2026-05-27",
+        "author": { "@id": "https://bhavik8025.github.io/BEBO-the-PET/#person" },
+        "downloadUrl": "https://github.com/bhavik8025/BEBO-the-PET/releases/tag/v1.0.0",
+        "url": "https://bhavik8025.github.io/BEBO-the-PET/",
+        "screenshot": "https://bhavik8025.github.io/BEBO-the-PET/panel-screenshot.png",
+        "featureList": "Summarize text, Humanize AI text, Simplify complex text, Draft emails, Fix grammar, Ask AI",
+        "license": "https://github.com/bhavik8025/BEBO-the-PET/blob/main/LICENSE"
+      }
+    ]
   }
   </script>
 
