@@ -3,13 +3,13 @@
 > A tiny animated AI pet that lives on your Windows desktop. Click it, get superpowers.
 
 **Website:** https://bhavik8025.github.io/BEBO-the-PET/  
-**Download:** https://github.com/bhavik8025/BEBO-the-PET/releases/tag/v1.0.0
+**Download:** https://github.com/bhavik8025/BEBO-the-PET/releases/latest
 
 ---
 
 ## What is BEBO?
 
-BEBO is a **desktop AI productivity assistant** disguised as an adorable animated pet. It lives in the corner of your screen at all times — always on top, always ready. One click opens a sleek assistant panel powered by **Llama 3.3 70B** via the **Groq API**, letting you summarize documents, write emails, fix grammar, simplify complex text, humanize AI-generated content, or ask anything — all without switching windows or opening a browser.
+BEBO is a **desktop AI productivity assistant** disguised as an adorable animated pet. It lives in the corner of your screen at all times — always on top, always ready. One click opens a sleek assistant panel powered by **GPT-OSS 120B** via the **Groq API**, letting you summarize documents, write emails, fix grammar, simplify complex text, humanize AI-generated content, or ask anything — all without switching windows or opening a browser.
 
 Built entirely with **Electron + Node.js**, BEBO runs natively on Windows with zero browser needed.
 
@@ -31,7 +31,7 @@ Built entirely with **Electron + Node.js**, BEBO runs natively on Windows with z
 - **Resets to default size** (380×620) every time it reopens — clean slate every session
 - Editable output — modify AI results directly in the output box
 - One-click Copy button on all results
-- Powered by **Llama 3.3 70B** on Groq — blazing fast inference
+- Powered by **GPT-OSS 120B** on Groq — blazing fast inference
 
 ### ⚡ 6 AI Functions
 
@@ -50,7 +50,7 @@ Built entirely with **Electron + Node.js**, BEBO runs natively on Windows with z
 |---|---|
 | `Ctrl + Shift + P` | Toggle the assistant panel open/closed |
 | `Ctrl + Shift + W` | Wake BEBO — shows a happy animation |
-| `Ctrl + Shift + H` | Show/hide the pet |
+| `Ctrl + Shift + B` | Show/hide the pet |
 
 ### 🖥️ System Tray
 - BEBO lives in the system tray when running in the background
@@ -64,8 +64,8 @@ Built entirely with **Electron + Node.js**, BEBO runs natively on Windows with z
 |---|---|---|
 | Desktop Framework | **Electron v29** | Runs the app as a native Windows desktop application |
 | Runtime | **Node.js** | Powers the main process — IPC, AI calls, window management |
-| AI Model | **Llama 3.3 70B Versatile** | The large language model that processes all AI tasks |
-| AI Inference | **Groq API** | Hosts and runs Llama — free tier, ultra-fast inference |
+| AI Model | **GPT-OSS 120B** (auto-fallback: GPT-OSS 20B) | The large language model that processes all AI tasks |
+| AI Inference | **Groq API** | Hosts and runs GPT-OSS — free tier, ultra-fast inference |
 | Frontend | **HTML5 / CSS3 / Vanilla JS** | Renderer process — pet animations and panel UI |
 | Config | **dotenv** | Loads API keys from `.env` securely |
 | IPC | **Electron IPC** | Bidirectional communication between main and renderer processes |
@@ -126,7 +126,7 @@ User picks an AI action (e.g. Summarize)
 panel.js sends IPC → "task:run" with { type, input }
         │
         ▼
-ipc-router.js → ai-service.js → Groq API (Llama 3.3 70B)
+ipc-router.js → ai-service.js → Groq API (GPT-OSS 120B)
         │
         ▼
 Result returned → stripMarkdown() → clean plain text
@@ -140,7 +140,7 @@ BEBO shows speech bubble → "Done." ✓
 
 ## AI Prompt System
 
-Every AI function uses a structured **ROLE → OBJECTIVE → CONTEXT → INSTRUCTIONS** prompt architecture — engineered for maximum output quality from Llama 3.3 70B on Groq.
+Every AI function uses a structured **ROLE → OBJECTIVE → CONTEXT → INSTRUCTIONS** prompt architecture — engineered for maximum output quality from GPT-OSS 120B on Groq.
 
 ```
 ROLE:         Who the AI is (expert framing sets the quality bar)
@@ -208,7 +208,7 @@ BEBO was built as a solo project by **Bhavik Thakkar**, a student at Lal Bahadur
 |---|---|
 | **Claude (Anthropic)** | Primary AI coding assistant — architecture design, debugging, feature implementation, prompt engineering |
 | **Claude Code** | Agentic coding agent — made direct file edits, refactored code, managed the codebase iteratively in real-time |
-| **Groq + Llama 3.3 70B** | The AI brain powering BEBO's productivity features at runtime |
+| **Groq + GPT-OSS 120B** | The AI brain powering BEBO's productivity features at runtime |
 | **Electron** | Desktop framework that made a native Windows app possible using web technologies |
 | **Node.js** | Backend runtime for the main process |
 
@@ -218,7 +218,7 @@ BEBO was built as a solo project by **Bhavik Thakkar**, a student at Lal Bahadur
 2. **Architecture** — Designed dual-window Electron app (transparent pet window + floating panel window)
 3. **Pet Window** — Built animated character with CSS keyframe animations and a state machine (idle, happy, thinking, excited, confused, error, success)
 4. **Panel Window** — Built the assistant UI with dark theme, IPC communication, resizable layout
-5. **AI Integration** — Started with Google Gemini API, migrated to Groq + Llama 3.3 70B for a better free tier and faster inference
+5. **AI Integration** — Started with Google Gemini API, migrated to Groq + Llama 3.3 70B, then to GPT-OSS 120B when Groq retired all Llama models (Aug 2026)
 6. **Prompt Engineering** — Iterated on ROLE/OBJECTIVE/CONTEXT/INSTRUCTIONS prompt structure for best output quality
 7. **UX Polish** — Added resizable panel, toggle behaviour, dynamic positioning next to pet, editable output, plain text stripping
 
@@ -246,14 +246,16 @@ BEBO was built as a solo project by **Bhavik Thakkar**, a student at Lal Bahadur
 
 ## Roadmap
 
-- [ ] Voice input — speak your prompt instead of typing
+- [x] Voice input — press Win + H and dictate straight into BEBO (v2.0)
 - [ ] Custom AI personas — choose BEBO's personality and name
 - [ ] Conversation history — scroll through past AI interactions
-- [ ] Multi-monitor support — BEBO snaps to the active monitor
+- [x] Multi-monitor support — BEBO wakes on your active monitor (v2.0)
 - [ ] Plugin system — add your own custom AI functions
 - [ ] macOS port
 - [ ] Auto-start on Windows login
-- [ ] Dark/Light theme toggle for panel
+- [x] Dark/Light theme toggle for panel (v2.0)
+- [x] Custom hotkey remapping — change any shortcut from the panel settings (v2.0)
+- [x] In-app update alerts when a new version is released (v2.0)
 
 ---
 
@@ -262,9 +264,9 @@ BEBO was built as a solo project by **Bhavik Thakkar**, a student at Lal Bahadur
 | Metric | Value |
 |---|---|
 | Desktop Framework | Electron v29 |
-| AI Model | Llama 3.3 70B Versatile |
+| AI Model | GPT-OSS 120B |
 | AI Provider | Groq (free tier) |
-| Free Daily Requests | ~14,400 |
+| Free Daily Requests | ~1,000 |
 | Avg Response Speed | ~0.5–1.5 seconds |
 | App Size | < 5MB (excl. node_modules) |
 | Platform | Windows 10 / 11 |
@@ -286,4 +288,4 @@ GitHub: [@bhavik8025](https://github.com/bhavik8025)
 
 ---
 
-*Built with Electron, Node.js, Groq, Llama 3.3 70B, and Claude.*
+*Built with Electron, Node.js, Groq, GPT-OSS 120B, and Claude.*

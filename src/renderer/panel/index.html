@@ -6,15 +6,24 @@
     <title>BEBO Assistant</title>
     <link rel="stylesheet" href="./panel.css" />
   </head>
-  <body>
+  <body data-theme="dark">
     <main class="panel-shell">
       <header class="panel-header">
         <div>
           <p class="eyebrow">BEBO the PET</p>
           <h1>BEBO Assistant</h1>
         </div>
-        <button id="close-button" class="icon-button" aria-label="Close panel">×</button>
+        <div class="header-buttons">
+          <button id="theme-button" class="icon-button" aria-label="Toggle dark / light theme" title="Switch theme">☀</button>
+          <button id="settings-button" class="icon-button" aria-label="Keyboard shortcut settings" title="Keyboard shortcuts">⚙</button>
+          <button id="close-button" class="icon-button" aria-label="Close panel">×</button>
+        </div>
       </header>
+
+      <div id="update-banner" class="update-banner" hidden>
+        <span id="update-text">A new version of BEBO is available.</span>
+        <button id="update-button">Download</button>
+      </div>
 
       <section class="quick-actions" aria-label="Quick actions">
         <button data-task="summarize">Summarize</button>
@@ -26,8 +35,11 @@
       </section>
 
       <section class="input-section">
-        <label for="task-input">Input</label>
-        <textarea id="task-input" placeholder="Paste text and pick an action — or type any question for Ask AI."></textarea>
+        <div class="section-row">
+          <label for="task-input">Input</label>
+          <span class="voice-hint" title="Windows built-in voice typing — click into the box first">🎤 Win + H to dictate</span>
+        </div>
+        <textarea id="task-input" placeholder="Paste text and pick an action — or press Win + H and speak."></textarea>
       </section>
 
       <section class="output-section">
@@ -39,9 +51,43 @@
       </section>
 
       <footer>
-        <span>Ctrl+Shift+P opens this panel</span>
+        <span id="model-label">Powered by GPT-OSS 120B · Groq</span>
+        <span id="version-label"></span>
       </footer>
     </main>
+
+    <!-- Keyboard shortcuts settings -->
+    <div id="settings-overlay" class="overlay" hidden>
+      <div class="overlay-card">
+        <div class="overlay-head">
+          <h2>Keyboard Shortcuts</h2>
+          <button id="settings-close" class="icon-button" aria-label="Close settings">×</button>
+        </div>
+        <p class="overlay-hint">Click a shortcut, then press your new combo. Use at least one of Ctrl / Alt / Shift plus a key. Esc cancels.</p>
+        <div class="hotkey-row"><span>Wake BEBO</span><button class="hotkey-btn" data-action="wake"></button></div>
+        <div class="hotkey-row"><span>Hide / Show BEBO</span><button class="hotkey-btn" data-action="hide"></button></div>
+        <div class="hotkey-row"><span>Open / Close Panel</span><button class="hotkey-btn" data-action="panel"></button></div>
+        <p id="hotkey-error" class="hotkey-error" hidden></p>
+        <div class="overlay-actions">
+          <button id="hotkeys-reset">Reset defaults</button>
+          <button id="hotkeys-save" class="primary">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- What's new -->
+    <div id="whatsnew-overlay" class="overlay" hidden>
+      <div class="overlay-card">
+        <div class="overlay-head">
+          <h2 id="whatsnew-title">What's new</h2>
+        </div>
+        <ul id="whatsnew-list" class="whatsnew-list"></ul>
+        <div class="overlay-actions">
+          <button id="whatsnew-ok" class="primary">Got it</button>
+        </div>
+      </div>
+    </div>
+
     <script src="./panel.js"></script>
   </body>
 </html>

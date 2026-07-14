@@ -1,7 +1,7 @@
 {
   "name": "bebo-the-pet",
-  "version": "1.0.0",
-  "description": "BEBO — a tiny animated AI desktop companion powered by Llama 3.3 70B",
+  "version": "2.0.0",
+  "description": "BEBO — a tiny animated AI desktop companion powered by GPT-OSS 120B",
   "main": "src/main/index.js",
   "private": true,
   "scripts": {
@@ -49,6 +49,7 @@
       "icon": "assets/icon.ico"
     },
     "nsis": {
+      "artifactName": "BEBO.the.PET.Setup.${ext}",
       "oneClick": true,
       "allowToChangeInstallationDirectory": false,
       "createDesktopShortcut": true,
@@ -58,7 +59,7 @@
       "uninstallerIcon": "assets/icon.ico"
     },
     "portable": {
-      "artifactName": "BEBO-portable-${version}.exe"
+      "artifactName": "BEBO-portable.${ext}"
     }
   }
 }

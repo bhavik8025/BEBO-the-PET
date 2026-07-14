@@ -4,11 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>How BEBO Works — Electron + Groq AI Desktop Assistant Architecture</title>
-  <meta name="description" content="How BEBO the PET works under the hood: dual-window Electron architecture, Llama 3.3 70B via Groq at 800+ tokens/sec, structured prompt engineering, and global Windows shortcuts." />
+  <meta name="description" content="How BEBO the PET works under the hood: dual-window Electron architecture, GPT-OSS 120B via Groq at ~500 tokens/sec, structured prompt engineering, and global Windows shortcuts." />
   <link rel="canonical" href="https://bhavik8025.github.io/BEBO-the-PET/how-it-works.html" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="How BEBO Works — AI Desktop Assistant Architecture" />
-  <meta property="og:description" content="Dual-window Electron architecture, Groq-powered Llama 3.3 70B, structured prompt engine and global shortcuts — the full technical story of BEBO the PET." />
+  <meta property="og:description" content="Dual-window Electron architecture, Groq-powered GPT-OSS 120B, structured prompt engine and global shortcuts — the full technical story of BEBO the PET." />
   <meta property="og:url" content="https://bhavik8025.github.io/BEBO-the-PET/how-it-works.html" />
   <meta property="og:image" content="https://bhavik8025.github.io/BEBO-the-PET/bebo-avatar.png" />
 
@@ -17,7 +17,7 @@
     "@context": "https://schema.org",
     "@type": "TechArticle",
     "headline": "How BEBO the PET Works — Electron + Groq AI Desktop Assistant Architecture",
-    "description": "Technical breakdown of BEBO the PET: dual-window Electron architecture, Llama 3.3 70B via Groq, structured prompt engineering and global Windows shortcuts.",
+    "description": "Technical breakdown of BEBO the PET: dual-window Electron architecture, GPT-OSS 120B via Groq, structured prompt engineering and global Windows shortcuts.",
     "author": {"@type": "Person", "name": "Bhavik Thakkar"},
     "image": "https://bhavik8025.github.io/BEBO-the-PET/bebo-avatar.png",
     "mainEntityOfPage": "https://bhavik8025.github.io/BEBO-the-PET/how-it-works.html"
@@ -138,18 +138,18 @@
   <p>The pet window is tiny, transparent and click-through-resistant — it floats above every app. When clicked, it asks the main process to open the panel window <strong>right next to the pet's current position</strong>, clamped to your screen's work area so it never opens off-screen.</p>
   <p>Security: both renderers run with <strong>contextIsolation enabled</strong> and talk to Node.js only through narrow preload bridges — the same pattern used by production Electron apps like VS Code and Slack.</p>
 
-  <h2><span class="tag">03.</span> Why Groq + Llama 3.3 70B</h2>
+  <h2><span class="tag">03.</span> Why Groq + GPT-OSS 120B</h2>
   <p>BEBO's promise is speed, so the model choice was driven by one number: <strong>tokens per second</strong>.</p>
   <table>
     <thead><tr><th>Model</th><th>Tokens / sec</th><th>200-token task</th><th>Free tier</th></tr></thead>
     <tbody>
-      <tr><td>Llama 3.3 70B via Groq</td><td class="hl">800–1000</td><td class="hl">0.3–0.5s</td><td class="hl">14,400 req/day</td></tr>
+      <tr><td>GPT-OSS 120B via Groq</td><td class="hl">~500</td><td class="hl">0.4–0.6s</td><td class="hl">1,000 req/day</td></tr>
       <tr><td>Gemini 1.5 Flash</td><td>~200</td><td>1.0–1.5s</td><td>Limited</td></tr>
       <tr><td>GPT-4o</td><td>80–100</td><td>2.0–3.0s</td><td>Very limited</td></tr>
       <tr><td>Claude Sonnet</td><td>80–100</td><td>2.0–3.0s</td><td>Limited</td></tr>
     </tbody>
   </table>
-  <p>Groq's custom LPU hardware serves Llama 3.3 70B roughly <strong>10x faster than GPU-based APIs</strong>. For productivity tasks — summarizing, grammar, email drafting — output quality is equivalent to the best paid models, and the free tier needs no credit card.</p>
+  <p>Groq's custom LPU hardware serves GPT-OSS 120B roughly <strong>5x faster than GPU-based APIs</strong>. For productivity tasks — summarizing, grammar, email drafting — output quality is equivalent to the best paid models, and the free tier needs no credit card.</p>
 
   <h2><span class="tag">04.</span> The Prompt Engine</h2>
   <p>Every one of BEBO's 6 functions uses a structured 4-layer prompt instead of a naive instruction:</p>
@@ -179,7 +179,7 @@
     <thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
     <tbody>
       <tr><td><kbd>Ctrl + Shift + W</kbd></td><td>Wake up BEBO</td></tr>
-      <tr><td><kbd>Ctrl + Shift + H</kbd></td><td>Hide BEBO</td></tr>
+      <tr><td><kbd>Ctrl + Shift + B</kbd></td><td>Hide BEBO</td></tr>
       <tr><td><kbd>Ctrl + Shift + P</kbd></td><td>Show / hide the assistant panel</td></tr>
     </tbody>
   </table>
@@ -191,7 +191,7 @@
     <img src="bebo-avatar.png" alt="BEBO the PET robot" />
     <h2 style="margin:0 0 8px;">See it in action on your own desktop</h2>
     <p style="margin-bottom:22px;">Free forever. Setup takes under 2 minutes.</p>
-    <a class="btn" href="https://github.com/bhavik8025/BEBO-the-PET/releases/tag/v1.0.0" target="_blank" rel="noopener">&#8659; Download BEBO Free</a>
+    <a class="btn" href="https://github.com/bhavik8025/BEBO-the-PET/releases/latest" target="_blank" rel="noopener">&#8659; Download BEBO Free</a>
   </div>
 
   <div class="explore">

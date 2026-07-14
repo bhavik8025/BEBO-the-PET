@@ -1,15 +1,20 @@
 /**
  * config.js — Persistent config manager for BEBO the PET
- * Reads/writes API key from %APPDATA%/bebo-the-pet/config.json
- * Falls back to .env for local development
+ * Always saves to: %APPDATA%\BEBO-the-PET\config.json
+ * Fixed folder name so dev mode and installed mode use the same file.
  */
 
 const { app } = require('electron');
 const path = require('path');
 const fs   = require('fs');
 
+// Always use a fixed folder name — never changes between dev and production
+function getConfigDir() {
+  return path.join(app.getPath('appData'), 'BEBO-the-PET');
+}
+
 function getConfigPath() {
-  return path.join(app.getPath('userData'), 'config.json');
+  return path.join(getConfigDir(), 'config.json');
 }
 
 function readConfig() {
@@ -24,12 +29,21 @@ function readConfig() {
 
 function writeConfig(data) {
   try {
-    const p = getConfigPath();
-    fs.mkdirSync(path.dirname(p), { recursive: true });
+    const dir = getConfigDir();
+    const p   = getConfigPath();
+
+    // Create folder if it doesn't exist
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
     const existing = readConfig();
-    fs.writeFileSync(p, JSON.stringify({ ...existing, ...data }, null, 2), 'utf-8');
+    const merged   = { ...existing, ...data };
+    fs.writeFileSync(p, JSON.stringify(merged, null, 2), 'utf-8');
     return true;
-  } catch (_) {
+  } catch (err) {
+    // Surface the error so we can debug if it ever fails again
+    console.error('[BEBO config] Failed to write config:', err.message);
     return false;
   }
 }
@@ -38,7 +52,7 @@ function getGroqKey() {
   // 1. Persisted config (production / after first-run setup)
   const cfg = readConfig();
   if (cfg.GROQ_API_KEY) return cfg.GROQ_API_KEY;
-  // 2. .env fallback (development)
+  // 2. .env fallback (development only)
   return process.env.GROQ_API_KEY || null;
 }
 
@@ -47,7 +61,6 @@ function hasGroqKey() {
 }
 
 function saveGroqKey(key) {
-  // Also set in process.env so ai-service picks it up immediately
   process.env.GROQ_API_KEY = key;
   return writeConfig({ GROQ_API_KEY: key });
 }

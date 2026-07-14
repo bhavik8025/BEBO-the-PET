@@ -1,5 +1,15 @@
 const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
-const GROQ_MODEL    = 'llama-3.3-70b-versatile';
+
+// ── Model chain ─────────────────────────────────────────────────────────────
+// Groq retires all Llama models on 2026-08-16 (llama-3.3-70b-versatile was
+// BEBO's original brain). Primary is now OpenAI's open-weight GPT-OSS 120B —
+// Groq's officially recommended replacement (measured ~480 tok/s).
+// If the primary model is rate-limited or ever decommissioned, BEBO
+// automatically falls back to the next model instead of failing the task.
+const GROQ_MODELS = [
+  'openai/gpt-oss-120b', // primary  — best quality, ~500 tok/s on Groq
+  'openai/gpt-oss-20b'   // fallback — lighter, ~970 tok/s, separate quota
+];
 const { getGroqKey } = require('./config');
 
 // Global system prompt — enforces plain text and clean output for every task
@@ -133,7 +143,7 @@ function stripMarkdown(text) {
     .trim();
 }
 
-// Per-task temperature — tuned specifically for Llama 3.3 70B on Groq
+// Per-task temperature — tuned for GPT-OSS on Groq (validated on 120B)
 function getTemperature(type) {
   const temperatures = {
     summarize:   0.2, // needs accuracy and faithfulness to source
@@ -195,38 +205,51 @@ async function runAITask({ type, input, screenshotBase64 }) {
     ? cleanInput
     : `${getTaskInstruction(type)}\n\n---\nINPUT TEXT:\n${cleanInput}\n---`;
 
-  const response = await fetch(GROQ_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'authorization': `Bearer ${apiKey}`
-    },
-    body: JSON.stringify({
-      model: GROQ_MODEL,
-      temperature: getTemperature(type),
-      max_tokens: getMaxTokens(type),
-      top_p: 0.9,
-      stream: false,
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user',   content: userMessage }
-      ]
-    })
-  });
+  let lastError = 'The AI service is unavailable right now. Please try again in a moment.';
 
-  const data = await response.json().catch(() => ({}));
+  for (const model of GROQ_MODELS) {
+    const response = await fetch(GROQ_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model,
+        temperature: getTemperature(type),
+        max_tokens: getMaxTokens(type),
+        top_p: 0.9,
+        stream: false,
+        // GPT-OSS models are reasoning models — keep the thinking minimal
+        // and hidden so responses stay instant and contain only the answer.
+        reasoning_effort: 'low',
+        reasoning_format: 'hidden',
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user',   content: userMessage }
+        ]
+      })
+    });
 
-  if (!response.ok) {
-    const message = data.error?.message || `Groq request failed with status ${response.status}.`;
-    return { ok: false, output: message };
+    const data = await response.json().catch(() => ({}));
+
+    if (response.ok) {
+      const raw = data.choices?.[0]?.message?.content?.trim();
+      return {
+        ok: true,
+        output: raw ? stripMarkdown(raw) : 'The AI response was empty.'
+      };
+    }
+
+    lastError = data.error?.message || `Groq request failed with status ${response.status}.`;
+
+    // Rate-limited or model retired — automatically try the next model
+    const tryNext = response.status === 429 || response.status === 404 ||
+      /decommission|deprecat|not found|does not exist/i.test(lastError);
+    if (!tryNext) break;
   }
 
-  const raw = data.choices?.[0]?.message?.content?.trim();
-
-  return {
-    ok: true,
-    output: raw ? stripMarkdown(raw) : 'The AI response was empty.'
-  };
+  return { ok: false, output: lastError };
 }
 
-module.exports = { runAITask };
+module.exports = { runAITask, GROQ_MODELS };

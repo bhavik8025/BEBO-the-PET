@@ -17,15 +17,15 @@
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": [
-      {"@type": "Question", "name": "Is BEBO the PET really free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, completely free forever. BEBO is open source under the MIT license. There is no subscription, no premium tier, and no hidden cost. The AI runs on Groq's free tier which gives you 14,400 free requests per day."}},
+      {"@type": "Question", "name": "Is BEBO the PET really free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, completely free forever. BEBO is open source under the MIT license. There is no subscription, no premium tier, and no hidden cost. The AI runs on Groq's free tier which gives you 1,000 free requests per day."}},
       {"@type": "Question", "name": "Do I need a credit card to use BEBO?", "acceptedAnswer": {"@type": "Answer", "text": "No. You only need a free Groq API key, which requires no credit card. Creating the key takes about 30 seconds at groq.com."}},
-      {"@type": "Question", "name": "What AI model does BEBO use?", "acceptedAnswer": {"@type": "Answer", "text": "BEBO uses Llama 3.3 70B, Meta's open-source large language model, served through the Groq API at 800-1000 tokens per second — roughly 10x faster than GPT-4o."}},
+      {"@type": "Question", "name": "What AI model does BEBO use?", "acceptedAnswer": {"@type": "Answer", "text": "BEBO uses GPT-OSS 120B, OpenAI's open-weight large language model, served through the Groq API at ~500 tokens per second — roughly 5x faster than GPT-4o."}},
       {"@type": "Question", "name": "Is my data stored anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. BEBO is completely stateless. Your text goes directly from your machine to the Groq API and the answer comes back. Nothing is logged, stored, or used for training by BEBO. There is no account and no cloud storage."}},
       {"@type": "Question", "name": "What are the system requirements?", "acceptedAnswer": {"@type": "Answer", "text": "Windows 10 or Windows 11, about 200 MB of disk space, and an internet connection for the AI requests. BEBO is lightweight and uses minimal RAM while idle."}},
       {"@type": "Question", "name": "How do I get a Groq API key?", "acceptedAnswer": {"@type": "Answer", "text": "Go to groq.com, create a free account (no credit card), open the API Keys section and click Create API Key. Copy the key and paste it into BEBO's setup screen. The whole process takes under a minute."}},
       {"@type": "Question", "name": "How fast is BEBO compared to ChatGPT in a browser?", "acceptedAnswer": {"@type": "Answer", "text": "A complete BEBO workflow takes 3-4 seconds: click the pet, paste text, pick an action, get the result. The same task through a browser AI tool takes 12-15 seconds because of opening the browser, navigating, loading and switching windows."}},
       {"@type": "Question", "name": "What can BEBO actually do?", "acceptedAnswer": {"@type": "Answer", "text": "BEBO has 6 built-in AI functions: Summarize any text, Humanize AI-written text, Simplify complex text, Draft professional emails, Fix grammar silently, and Ask AI anything in free form."}},
-      {"@type": "Question", "name": "What keyboard shortcuts does BEBO have?", "acceptedAnswer": {"@type": "Answer", "text": "Three global shortcuts that work inside any app: Ctrl+Shift+W wakes BEBO, Ctrl+Shift+H hides BEBO, and Ctrl+Shift+P shows or hides the assistant panel."}},
+      {"@type": "Question", "name": "What keyboard shortcuts does BEBO have?", "acceptedAnswer": {"@type": "Answer", "text": "Three global shortcuts that work inside any app: Ctrl+Shift+W wakes BEBO, Ctrl+Shift+B hides BEBO, and Ctrl+Shift+P shows or hides the assistant panel."}},
       {"@type": "Question", "name": "Is BEBO open source?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The full source code is public on GitHub at github.com/bhavik8025/BEBO-the-PET under the MIT license. You can read the code, report issues, or contribute."}},
       {"@type": "Question", "name": "Why does Windows SmartScreen show a warning when I install BEBO?", "acceptedAnswer": {"@type": "Answer", "text": "Code-signing certificates cost hundreds of dollars per year, which an independent free app does not pay for. The warning only means the publisher is not registered with Microsoft. Click More info and then Run anyway. The source code is fully public on GitHub so you can verify exactly what BEBO does."}},
       {"@type": "Question", "name": "Does BEBO work offline?", "acceptedAnswer": {"@type": "Answer", "text": "The pet itself runs offline, but the AI functions need an internet connection because the language model runs on Groq's cloud servers."}},
@@ -111,7 +111,7 @@
 
   <details open>
     <summary>Is BEBO the PET really free?</summary>
-    <div class="answer">Yes, completely free forever. BEBO is <strong>open source under the MIT license</strong>. There is no subscription, no premium tier, and no hidden cost. The AI runs on Groq's free tier which gives you <strong>14,400 free requests per day</strong> — that's roughly 10 AI tasks every minute, all day.</div>
+    <div class="answer">Yes, completely free forever. BEBO is <strong>open source under the MIT license</strong>. There is no subscription, no premium tier, and no hidden cost. The AI runs on Groq's free tier which gives you <strong>1,000 free requests per day</strong> — that's roughly 40 AI tasks every hour, all day.</div>
   </details>
 
   <details>
@@ -121,7 +121,7 @@
 
   <details>
     <summary>What AI model does BEBO use?</summary>
-    <div class="answer">BEBO uses <strong>Llama 3.3 70B</strong>, Meta's open-source large language model, served through the <strong>Groq API</strong> at 800–1000 tokens per second — roughly 10x faster than GPT-4o. For everyday productivity tasks the output quality is equivalent to the best paid models.</div>
+    <div class="answer">BEBO uses <strong>GPT-OSS 120B</strong>, OpenAI's open-weight large language model, served through the <strong>Groq API</strong> at ~500 tokens per second — roughly 5x faster than GPT-4o. For everyday productivity tasks the output quality is equivalent to the best paid models.</div>
   </details>
 
   <details>
@@ -151,7 +151,7 @@
 
   <details>
     <summary>What keyboard shortcuts does BEBO have?</summary>
-    <div class="answer">Three global shortcuts that work inside any app: <code>Ctrl+Shift+W</code> wakes BEBO, <code>Ctrl+Shift+H</code> hides BEBO, and <code>Ctrl+Shift+P</code> shows or hides the assistant panel.</div>
+    <div class="answer">Three global shortcuts that work inside any app: <code>Ctrl+Shift+W</code> wakes BEBO, <code>Ctrl+Shift+B</code> hides BEBO, and <code>Ctrl+Shift+P</code> shows or hides the assistant panel.</div>
   </details>
 
   <details>
@@ -166,7 +166,7 @@
 
   <details>
     <summary>Does BEBO work offline?</summary>
-    <div class="answer">The pet itself runs offline, but the AI functions need an internet connection because Llama 3.3 70B runs on Groq's cloud servers, not on your machine.</div>
+    <div class="answer">The pet itself runs offline, but the AI functions need an internet connection because GPT-OSS 120B runs on Groq's cloud servers, not on your machine.</div>
   </details>
 
   <details>
@@ -183,7 +183,7 @@
     <img src="bebo-avatar.png" alt="BEBO the PET robot" />
     <h2 style="margin-bottom:8px;">Still curious? Just try it.</h2>
     <p style="color:var(--muted);margin-bottom:22px;font-size:15px;">Free forever. No account. Under 2 minutes to set up.</p>
-    <a class="btn" href="https://github.com/bhavik8025/BEBO-the-PET/releases/tag/v1.0.0" target="_blank" rel="noopener">&#8659; Download BEBO Free</a>
+    <a class="btn" href="https://github.com/bhavik8025/BEBO-the-PET/releases/latest" target="_blank" rel="noopener">&#8659; Download BEBO Free</a>
   </div>
 
   <div class="explore">
