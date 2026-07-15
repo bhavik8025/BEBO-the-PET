@@ -67,6 +67,13 @@
         <div class="hotkey-row"><span>Wake BEBO</span><button class="hotkey-btn" data-action="wake"></button></div>
         <div class="hotkey-row"><span>Hide / Show BEBO</span><button class="hotkey-btn" data-action="hide"></button></div>
         <div class="hotkey-row"><span>Open / Close Panel</span><button class="hotkey-btn" data-action="panel"></button></div>
+        <div class="telemetry-row">
+          <label for="telemetry-toggle">
+            <input type="checkbox" id="telemetry-toggle" />
+            Anonymous install ping
+          </label>
+          <p class="overlay-hint">Once a day BEBO sends its version number and a random id — never your text, never anything personal. It only counts active installs. Untick to opt out.</p>
+        </div>
         <p id="hotkey-error" class="hotkey-error" hidden></p>
         <div class="overlay-actions">
           <button id="hotkeys-reset">Reset defaults</button>

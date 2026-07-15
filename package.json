@@ -1,6 +1,6 @@
 {
   "name": "bebo-the-pet",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "BEBO — a tiny animated AI desktop companion powered by GPT-OSS 120B",
   "main": "src/main/index.js",
   "license": "MIT",

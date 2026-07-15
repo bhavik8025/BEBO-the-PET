@@ -1,5 +1,9 @@
 # 🤖 BEBO the PET — AI Desktop Companion
 
+[![Downloads](https://img.shields.io/github/downloads/bhavik8025/BEBO-the-PET/total?style=for-the-badge&color=7c5cfc&label=DOWNLOADS)](https://github.com/bhavik8025/BEBO-the-PET/releases/latest)
+[![Latest Release](https://img.shields.io/github/v/release/bhavik8025/BEBO-the-PET?style=for-the-badge&color=22d3ee&label=LATEST)](https://github.com/bhavik8025/BEBO-the-PET/releases/latest)
+[![License](https://img.shields.io/badge/LICENSE-MIT-10b981?style=for-the-badge)](LICENSE)
+
 > A tiny animated AI pet that lives on your Windows desktop. Click it, get superpowers.
 
 **Website:** https://bhavik8025.github.io/BEBO-the-PET/  
@@ -240,7 +244,8 @@ BEBO was built as a solo project by **Bhavik Thakkar**, a student at Lal Bahadur
 - `.gitignore` excludes `.env` by default
 - Electron `contextIsolation: true` and `nodeIntegration: false` on all renderer windows
 - All IPC communication goes through secure preload bridges
-- No data is stored or logged — all requests are fully stateless
+- Your text is never stored or logged — all AI requests are fully stateless
+- Optional anonymous install counter: one daily ping with the app version and a random id (never your content) — opt out anytime from the panel's ⚙ settings
 
 ---
 

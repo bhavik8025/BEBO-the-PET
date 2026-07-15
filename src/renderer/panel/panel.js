@@ -18,6 +18,7 @@ const whatsnewOverlay = document.getElementById('whatsnew-overlay');
 const whatsnewTitle = document.getElementById('whatsnew-title');
 const whatsnewList = document.getElementById('whatsnew-list');
 const whatsnewOk = document.getElementById('whatsnew-ok');
+const telemetryToggle = document.getElementById('telemetry-toggle');
 const hotkeyButtons = Array.from(document.querySelectorAll('.hotkey-btn'));
 
 let appHotkeys = {};
@@ -64,6 +65,11 @@ themeButton.addEventListener('click', () => {
   const next = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
   applyTheme(next);
   window.panelAPI.setTheme(next);
+});
+
+/* ── Telemetry opt-out ─────────────────────────────────────────── */
+telemetryToggle.addEventListener('change', () => {
+  window.panelAPI.setTelemetry(telemetryToggle.checked);
 });
 
 /* ── Hotkey remapping ──────────────────────────────────────────── */
@@ -186,6 +192,7 @@ whatsnewOk.addEventListener('click', () => {
   modelLabel.textContent = `Powered by ${info.modelLabel} · Groq`;
   appHotkeys = { ...info.hotkeys };
   defaultHotkeys = { ...info.defaults };
+  telemetryToggle.checked = info.telemetry !== false;
 
   if (info.whatsNew && info.whatsNew.show) {
     whatsnewTitle.textContent = info.whatsNew.title;

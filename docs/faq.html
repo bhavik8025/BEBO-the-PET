@@ -20,7 +20,7 @@
       {"@type": "Question", "name": "Is BEBO the PET really free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, completely free forever. BEBO is open source under the MIT license. There is no subscription, no premium tier, and no hidden cost. The AI runs on Groq's free tier which gives you 1,000 free requests per day."}},
       {"@type": "Question", "name": "Do I need a credit card to use BEBO?", "acceptedAnswer": {"@type": "Answer", "text": "No. You only need a free Groq API key, which requires no credit card. Creating the key takes about 30 seconds at groq.com."}},
       {"@type": "Question", "name": "What AI model does BEBO use?", "acceptedAnswer": {"@type": "Answer", "text": "BEBO uses GPT-OSS 120B, OpenAI's open-weight large language model, served through the Groq API at ~500 tokens per second — roughly 5x faster than GPT-4o."}},
-      {"@type": "Question", "name": "Is my data stored anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. BEBO is completely stateless. Your text goes directly from your machine to the Groq API and the answer comes back. Nothing is logged, stored, or used for training by BEBO. There is no account and no cloud storage."}},
+      {"@type": "Question", "name": "Is my data stored anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. BEBO is completely stateless. Your text goes directly from your machine to the Groq API and the answer comes back. Nothing is logged, stored, or used for training by BEBO. There is no account and no cloud storage. The only exception is an optional anonymous install counter: one daily ping with the app version and a random id — never your text — which you can turn off in the panel settings."}},
       {"@type": "Question", "name": "What are the system requirements?", "acceptedAnswer": {"@type": "Answer", "text": "Windows 10 or Windows 11, about 200 MB of disk space, and an internet connection for the AI requests. BEBO is lightweight and uses minimal RAM while idle."}},
       {"@type": "Question", "name": "How do I get a Groq API key?", "acceptedAnswer": {"@type": "Answer", "text": "Go to groq.com, create a free account (no credit card), open the API Keys section and click Create API Key. Copy the key and paste it into BEBO's setup screen. The whole process takes under a minute."}},
       {"@type": "Question", "name": "How fast is BEBO compared to ChatGPT in a browser?", "acceptedAnswer": {"@type": "Answer", "text": "A complete BEBO workflow takes 3-4 seconds: click the pet, paste text, pick an action, get the result. The same task through a browser AI tool takes 12-15 seconds because of opening the browser, navigating, loading and switching windows."}},
@@ -133,7 +133,7 @@
 
   <details>
     <summary>Is my data stored anywhere?</summary>
-    <div class="answer">No. BEBO is <strong>completely stateless</strong>. Your text goes directly from your machine to the Groq API and the answer comes back. Nothing is logged, stored, or used for training by BEBO. There is no account, no telemetry and no cloud storage.</div>
+    <div class="answer">No. BEBO is <strong>completely stateless</strong>. Your text goes directly from your machine to the Groq API and the answer comes back. Nothing is logged, stored, or used for training by BEBO. There is no account and no cloud storage. The only exception: an optional <strong>anonymous install counter</strong> — one daily ping carrying the app version and a random id, never your text. Turn it off anytime from the panel's ⚙ settings.</div>
   </details>
 
   <details>
@@ -216,5 +216,6 @@
   </div>
 </footer>
 
+<script data-goatcounter="https://bebothepet.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>

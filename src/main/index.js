@@ -8,6 +8,7 @@ const { setupTray } = require('./tray');
 const { hasGroqKey, saveGroqKey, getGroqKey, readConfig, writeConfig } = require('./config');
 const { GROQ_MODELS } = require('./ai-service');
 const { checkForUpdates } = require('./update-checker');
+const { sendDailyPing, isTelemetryEnabled, setTelemetryEnabled } = require('./telemetry');
 
 app.setAppUserModelId('com.bhavik.bebo-the-pet');
 
@@ -61,10 +62,15 @@ function launchBEBO() {
 
   // Check GitHub for a newer release once the windows are up
   setTimeout(() => checkForUpdates(panelWindow), 4000);
+
+  // Anonymous daily install ping (opt-out in settings) — always fail-silent
+  setTimeout(sendDailyPing, 7000);
+  setInterval(sendDailyPing, 6 * 60 * 60 * 1000);
 }
 
 // ── App info / settings IPC (panel) ───────────────────────────────────────────
 const WHATS_NEW_ITEMS = [
+  'New: anonymous install counter — one daily ping with app version + random id, never your text. Opt out anytime via the gear icon',
   'New AI brain: GPT-OSS 120B via Groq — the old Llama model retires on Aug 16, 2026',
   'Automatic backup model (GPT-OSS 20B) if the primary is busy',
   'Every action button now has its own color',
@@ -87,6 +93,7 @@ ipcMain.handle('app:getInfo', () => {
   return {
     version,
     modelLabel: prettyModelName(GROQ_MODELS[0]),
+    telemetry: isTelemetryEnabled(),
     theme: cfg.theme === 'light' ? 'light' : 'dark',
     hotkeys: getHotkeys(),
     defaults: DEFAULT_HOTKEYS,
@@ -107,6 +114,8 @@ ipcMain.on('app:setTheme', (_, theme) => {
 });
 
 ipcMain.handle('app:saveHotkeys', (_, hotkeys) => updateHotkeys(hotkeys));
+
+ipcMain.handle('app:setTelemetry', (_, on) => setTelemetryEnabled(on));
 
 ipcMain.on('app:whatsNewSeen', () => {
   writeConfig({ lastSeenVersion: app.getVersion() });

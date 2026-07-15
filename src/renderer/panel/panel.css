@@ -355,6 +355,28 @@ footer {
   font-weight: 600;
 }
 
+.telemetry-row {
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.telemetry-row label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.telemetry-row input {
+  accent-color: var(--brand);
+}
+
 .whatsnew-list {
   margin: 0;
   padding-left: 18px;

@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('panelAPI', {
   getAppInfo: () => ipcRenderer.invoke('app:getInfo'),
   setTheme: (theme) => ipcRenderer.send('app:setTheme', theme),
   saveHotkeys: (hotkeys) => ipcRenderer.invoke('app:saveHotkeys', hotkeys),
+  setTelemetry: (on) => ipcRenderer.invoke('app:setTelemetry', on),
   whatsNewSeen: () => ipcRenderer.send('app:whatsNewSeen'),
   openReleases: () => ipcRenderer.send('app:openReleases'),
   onUpdateAvailable: (callback) => ipcRenderer.on('app:updateAvailable', (_, payload) => callback(payload))
