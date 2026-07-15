@@ -123,7 +123,7 @@ def slide_1():
     d   = ImageDraw.Draw(img)
 
     # First-launch badge
-    pill_draw(d, "FIRST LAUNCH  2026", 60, 52, F('b',22), DPUR, TEXT)
+    pill_draw(d, "BEBO 2.0  —  2026", 60, 52, F('b',22), DPUR, TEXT)
 
     # Main title
     d.text((60, 130), "BEBO",      font=F('b',104), fill=TEXT)
@@ -265,7 +265,7 @@ def slide_3():
         rr(d, px_ - 4, py_ - 4, pw_ + 8, ph_ + 8,
            r=12, fill=(20, 21, 38), outline=(*PURPLE, 180), lw=2)
         img.paste(panel_img, (px_, py_))
-        d.text((px_, py_ - 26), "Real Panel UI  (Ctrl+Shift+P)",
+        d.text((px_, py_ + ph_ + 12), "Real Panel UI  (Ctrl+Shift+P)",
                font=F('r', 19), fill=(*MUTED, 165))
 
     bebo_paste(img, size=390, x=640, y=155)
@@ -609,10 +609,10 @@ def slide_9():
     d.text((82, 376), "Roadmap — What's Coming", font=F('b',30), fill=LPUR)
     d.rectangle([82, 420, 480, 424], fill=(*PURPLE,90))
     roadmap = [
-        (CYAN,   "Voice input — speak your prompt"),
-        (GREEN,  "Conversation history panel"),
-        (ORANGE, "Custom AI personas & personalities"),
-        (YELLOW, "Plugin system — add your own tools"),
+        (CYAN,   "Custom AI personas & personalities"),
+        (GREEN,  "Plugin system — add your own tools"),
+        (ORANGE, "Voice replies — BEBO talks back"),
+        (YELLOW, "One-click in-app updates"),
         (PURPLE, "macOS port"),
     ]
     ry = 438
@@ -621,14 +621,14 @@ def slide_9():
         d.text((118, ry), item, font=F('r',26), fill=(*TEXT,195))
         ry += 52
 
-    # Author card
-    rr(d, 60, 750, 660, 116, r=16, fill=(*PURPLE,16), outline=(*PURPLE,60), lw=1)
+    # Author card — solid dark fill (Pillow ignores alpha in fills)
+    rr(d, 60, 750, 660, 116, r=16, fill=(30,18,70), outline=(*PURPLE,140), lw=2)
     d.text((82, 770), "Bhavik Thakkar",
            font=F('b',32), fill=TEXT)
     d.text((82, 814), "Lal Bahadur Shastri Institute of Management",
-           font=F('r',22), fill=(*MUTED,195))
+           font=F('r',22), fill=(*LPUR,225))
 
-    d.text((60, 898), "My first ever app launch.",
+    d.text((60, 898), "My first app — now at version 2.0.",
            font=F('b',28), fill=(*LPUR,180))
     d.text((60, 938), "BEBO the PET  |  Free  |  Open Source  |  Windows",
            font=F('r',21), fill=(*MUTED,155))

@@ -25,11 +25,13 @@
       {"@type": "Question", "name": "How do I get a Groq API key?", "acceptedAnswer": {"@type": "Answer", "text": "Go to groq.com, create a free account (no credit card), open the API Keys section and click Create API Key. Copy the key and paste it into BEBO's setup screen. The whole process takes under a minute."}},
       {"@type": "Question", "name": "How fast is BEBO compared to ChatGPT in a browser?", "acceptedAnswer": {"@type": "Answer", "text": "A complete BEBO workflow takes 3-4 seconds: click the pet, paste text, pick an action, get the result. The same task through a browser AI tool takes 12-15 seconds because of opening the browser, navigating, loading and switching windows."}},
       {"@type": "Question", "name": "What can BEBO actually do?", "acceptedAnswer": {"@type": "Answer", "text": "BEBO has 6 built-in AI functions: Summarize any text, Humanize AI-written text, Simplify complex text, Draft professional emails, Fix grammar silently, and Ask AI anything in free form."}},
-      {"@type": "Question", "name": "What keyboard shortcuts does BEBO have?", "acceptedAnswer": {"@type": "Answer", "text": "Three global shortcuts that work inside any app: Ctrl+Shift+W wakes BEBO, Ctrl+Shift+B hides BEBO, and Ctrl+Shift+P shows or hides the assistant panel."}},
+      {"@type": "Question", "name": "What keyboard shortcuts does BEBO have?", "acceptedAnswer": {"@type": "Answer", "text": "Three global shortcuts that work inside any app: Ctrl+Shift+W wakes BEBO, Ctrl+Shift+B hides BEBO, and Ctrl+Shift+P shows or hides the assistant panel. Since BEBO 2.0 all three can be remapped from the settings inside the panel."}},
+      {"@type": "Question", "name": "What is new in BEBO 2.0?", "acceptedAnswer": {"@type": "Answer", "text": "BEBO 2.0 brings a new AI brain (GPT-OSS 120B with an automatic GPT-OSS 20B backup), a color for every action button, a dark/light theme toggle, remappable keyboard shortcuts, voice input via Windows dictation (Win+H), multi-monitor support, and built-in update alerts."}},
+      {"@type": "Question", "name": "Can I dictate text to BEBO instead of typing?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Click into BEBO's Input box, press Win+H, and speak — Windows' built-in voice typing writes your words straight into the box. No extra setup, no extra cost."}},
       {"@type": "Question", "name": "Is BEBO open source?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The full source code is public on GitHub at github.com/bhavik8025/BEBO-the-PET under the MIT license. You can read the code, report issues, or contribute."}},
       {"@type": "Question", "name": "Why does Windows SmartScreen show a warning when I install BEBO?", "acceptedAnswer": {"@type": "Answer", "text": "Code-signing certificates cost hundreds of dollars per year, which an independent free app does not pay for. The warning only means the publisher is not registered with Microsoft. Click More info and then Run anyway. The source code is fully public on GitHub so you can verify exactly what BEBO does."}},
       {"@type": "Question", "name": "Does BEBO work offline?", "acceptedAnswer": {"@type": "Answer", "text": "The pet itself runs offline, but the AI functions need an internet connection because the language model runs on Groq's cloud servers."}},
-      {"@type": "Question", "name": "Can BEBO start automatically with Windows?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Press Win+R, type shell:startup, press Enter and place a BEBO shortcut in that folder. BEBO will then start with Windows every time."}},
+      {"@type": "Question", "name": "Can BEBO start automatically with Windows?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — the installed version of BEBO adds itself to Windows startup automatically. No setup needed. Manual alternative: press Win+R, type shell:startup, and place a BEBO shortcut in that folder."}},
       {"@type": "Question", "name": "Will there be a macOS version?", "acceptedAnswer": {"@type": "Answer", "text": "A macOS port is on the long-term roadmap. BEBO is built with Electron which is cross-platform, so the core already works — the remaining work is macOS-specific window behavior and packaging."}}
     ]
   }
@@ -115,6 +117,11 @@
   </details>
 
   <details>
+    <summary>What's new in BEBO 2.0?</summary>
+    <div class="answer">A lot! <strong>New AI brain</strong> — GPT-OSS 120B with an automatic GPT-OSS 20B backup when the primary is busy. <strong>A color for every action button</strong>. <strong>Dark / light theme toggle</strong>. <strong>Remappable keyboard shortcuts</strong> from the panel's ⚙ settings. <strong>Voice input</strong> via Windows dictation (<code>Win+H</code>). <strong>Multi-monitor support</strong> — BEBO wakes on the screen you're using. And <strong>update alerts</strong> right inside the panel.</div>
+  </details>
+
+  <details>
     <summary>Do I need a credit card?</summary>
     <div class="answer">No. You only need a free Groq API key, which requires <strong>no credit card</strong>. Creating the key takes about 30 seconds at <a href="https://groq.com" target="_blank" rel="noopener">groq.com</a>.</div>
   </details>
@@ -151,7 +158,12 @@
 
   <details>
     <summary>What keyboard shortcuts does BEBO have?</summary>
-    <div class="answer">Three global shortcuts that work inside any app: <code>Ctrl+Shift+W</code> wakes BEBO, <code>Ctrl+Shift+B</code> hides BEBO, and <code>Ctrl+Shift+P</code> shows or hides the assistant panel.</div>
+    <div class="answer">Three global shortcuts that work inside any app: <code>Ctrl+Shift+W</code> wakes BEBO, <code>Ctrl+Shift+B</code> hides BEBO, and <code>Ctrl+Shift+P</code> shows or hides the assistant panel. Since <strong>BEBO 2.0</strong>, all three can be remapped from the ⚙ settings inside the panel.</div>
+  </details>
+
+  <details>
+    <summary>Can I dictate text instead of typing?</summary>
+    <div class="answer">Yes. Click into BEBO's Input box, press <code>Win+H</code>, and speak — Windows' built-in voice typing writes your words straight into the box. No extra setup, no extra cost. That's also why BEBO's hide shortcut moved to <code>Ctrl+Shift+B</code> — to keep everything around <code>Win+H</code> friction-free.</div>
   </details>
 
   <details>
@@ -171,7 +183,7 @@
 
   <details>
     <summary>Can BEBO start automatically with Windows?</summary>
-    <div class="answer">Yes. Press <code>Win+R</code>, type <code>shell:startup</code>, press Enter and place a BEBO shortcut in that folder. BEBO will start with Windows every time. Full steps on the <a href="download.html">setup page</a>.</div>
+    <div class="answer">Yes — the installed version of BEBO <strong>adds itself to Windows startup automatically</strong>. No setup needed. Manual alternative: press <code>Win+R</code>, type <code>shell:startup</code>, and place a BEBO shortcut in that folder.</div>
   </details>
 
   <details>

@@ -3,7 +3,12 @@
   "version": "2.0.0",
   "description": "BEBO — a tiny animated AI desktop companion powered by GPT-OSS 120B",
   "main": "src/main/index.js",
-  "private": true,
+  "license": "MIT",
+  "author": "Bhavik Thakkar",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bhavik8025/BEBO-the-PET.git"
+  },
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
