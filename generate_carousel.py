@@ -456,7 +456,7 @@ def slide_7():
 
     rr(d, 622, 208, 398, 178, r=20, fill=CARD)
     d.text((644, 232), "That's",              font=F('r',27), fill=(*MUTED,195))
-    d.text((644, 272), "10 tasks/min",        font=F('b',46), fill=PURPLE)
+    d.text((644, 272), "~40 tasks/hr",         font=F('b',46), fill=PURPLE)
     d.text((644, 338), "all day, every day.", font=F('r',26), fill=(*TEXT,175))
 
     # Table
