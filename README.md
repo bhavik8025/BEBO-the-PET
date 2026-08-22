@@ -2,7 +2,7 @@
 
 [![Downloads](https://img.shields.io/github/downloads/bhavik8025/BEBO-the-PET/total?style=for-the-badge&color=7c5cfc&label=DOWNLOADS)](https://github.com/bhavik8025/BEBO-the-PET/releases/latest)
 [![Latest Release](https://img.shields.io/github/v/release/bhavik8025/BEBO-the-PET?style=for-the-badge&color=22d3ee&label=LATEST)](https://github.com/bhavik8025/BEBO-the-PET/releases/latest)
-[![License](https://img.shields.io/badge/LICENSE-MIT-10b981?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/LICENSE-MIT-10b981?style=for-the-badge)](https://github.com/bhavik8025/BEBO-the-PET/blob/main/LICENSE)
 
 > A tiny animated AI pet that lives on your Windows desktop. Click it, get superpowers.
 
@@ -177,8 +177,8 @@ A `stripMarkdown()` safety function runs on every response — strips asterisks,
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/bhavik8025/bebo-the-pet.git
-cd bebo-the-pet
+git clone https://github.com/bhavik8025/BEBO-the-PET.git
+cd BEBO-the-PET
 ```
 
 ### 2. Install dependencies
