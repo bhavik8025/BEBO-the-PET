@@ -361,6 +361,15 @@
       font-weight: 600; margin: 20px 0;
       text-decoration: underline; text-underline-offset: 4px; word-break: break-all;
     }
+    /* Total-downloads badge (live count + archived v1.0.0) */
+    .dl-badge {
+      display: inline-flex; align-items: stretch; border-radius: 7px;
+      overflow: hidden; font-size: 13px; font-weight: 700;
+      letter-spacing: 0.08em; font-family: -apple-system, 'Segoe UI', sans-serif;
+    }
+    .dl-badge .lbl { background: #3f4451; color: #fff; padding: 9px 14px; }
+    .dl-badge .cnt { background: var(--purple); color: #fff; padding: 9px 15px; }
+    .dl-note { font-size: 12.5px; color: var(--muted); margin-top: 9px; }
     .setup-steps {
       background: var(--card); border-radius: 16px; padding: 28px;
       border: 1px solid rgba(124,92,252,0.15); max-width: 520px;
@@ -851,9 +860,11 @@
       &#8659; &nbsp; Download BEBO.the.PET.Setup.exe
     </a>
 
-    <div style="margin-top:10px;">
-      <img src="https://img.shields.io/github/downloads/bhavik8025/BEBO-the-PET/total?style=for-the-badge&color=7c5cfc&label=DOWNLOADS"
-           alt="Total downloads" height="28" loading="lazy" />
+    <div style="margin-top:14px;">
+      <span class="dl-badge">
+        <span class="lbl">TOTAL DOWNLOADS</span><span class="cnt" id="dl-total">106+</span>
+      </span>
+      <p class="dl-note">Across every version since launch &mdash; including 44 on the archived v1.0.0.</p>
     </div>
 
     <div class="setup-steps">
@@ -925,6 +936,33 @@
     <p style="margin-top:6px; font-size:12px;">&copy; 2026 BEBO the PET &nbsp;·&nbsp; My first ever app launch &#128640; &nbsp;·&nbsp; MIT License</p>
   </div>
 </footer>
+
+<script>
+/* Live total downloads.
+   GitHub's counter only reflects assets that still exist. The v1.0.0
+   installers were removed on 2026-08-29 once Groq retired their AI model,
+   which also removed their download counts — 27 (installer) + 17 (portable).
+   Those were real downloads, so they're added back here to show the true
+   lifetime total. If the API call fails, the static fallback in the HTML
+   stays put. */
+(function () {
+  var ARCHIVED_V1 = 44;
+  var el = document.getElementById('dl-total');
+  if (!el || !window.fetch) return;
+  fetch('https://api.github.com/repos/bhavik8025/BEBO-the-PET/releases')
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (releases) {
+      if (!Array.isArray(releases)) return;
+      var live = releases.reduce(function (sum, rel) {
+        return sum + (rel.assets || []).reduce(function (a, asset) {
+          return a + (asset.download_count || 0);
+        }, 0);
+      }, 0);
+      if (live > 0) el.textContent = (live + ARCHIVED_V1).toLocaleString();
+    })
+    .catch(function () { /* keep the fallback number */ });
+})();
+</script>
 
 <script data-goatcounter="https://bebothepet.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>

@@ -1,6 +1,6 @@
 # 🤖 BEBO the PET — AI Desktop Companion
 
-[![Downloads](https://img.shields.io/github/downloads/bhavik8025/BEBO-the-PET/total?style=for-the-badge&color=7c5cfc&label=DOWNLOADS)](https://github.com/bhavik8025/BEBO-the-PET/releases/latest)
+[![Downloads](https://img.shields.io/badge/TOTAL%20DOWNLOADS-106%2B-7c5cfc?style=for-the-badge)](https://github.com/bhavik8025/BEBO-the-PET/releases/latest)
 [![Latest Release](https://img.shields.io/github/v/release/bhavik8025/BEBO-the-PET?style=for-the-badge&color=22d3ee&label=LATEST)](https://github.com/bhavik8025/BEBO-the-PET/releases/latest)
 [![License](https://img.shields.io/badge/LICENSE-MIT-10b981?style=for-the-badge)](https://github.com/bhavik8025/BEBO-the-PET/blob/main/LICENSE)
 
