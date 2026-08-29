@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Llama 3.3 70B Deprecated on Groq — How I Migrated to GPT-OSS 120B</title>
+  <meta name="description" content="Groq retires llama-3.3-70b-versatile on August 16, 2026. A real migration story: benchmarks vs GPT-OSS 120B, the free-tier limits nobody documents, an automatic fallback chain, and the mistakes that cost me hours." />
+  <meta name="keywords" content="llama 3.3 70b deprecated, groq model deprecation, gpt-oss 120b, llama to gpt-oss migration, groq free tier limits, LLM model migration, openai gpt-oss groq" />
+  <meta name="author" content="Bhavik Thakkar" />
+  <link rel="canonical" href="https://bhavik8025.github.io/BEBO-the-PET/groq-llama-to-gpt-oss-migration.html" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Llama 3.3 70B Deprecated on Groq — How I Migrated to GPT-OSS 120B" />
+  <meta property="og:description" content="A real migration story with measured benchmarks: what breaks, what the docs don't tell you, and how to make the next model swap a one-line change." />
+  <meta property="og:url" content="https://bhavik8025.github.io/BEBO-the-PET/groq-llama-to-gpt-oss-migration.html" />
+  <meta property="og:image" content="https://bhavik8025.github.io/BEBO-the-PET/bebo-avatar.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Llama 3.3 70B Deprecated on Groq — Migrating to GPT-OSS 120B" />
+  <meta name="twitter:description" content="Measured benchmarks, the undocumented free-tier limits, and a fallback chain that survives the next deprecation." />
+  <meta name="twitter:image" content="https://bhavik8025.github.io/BEBO-the-PET/bebo-avatar.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Llama 3.3 70B Deprecated on Groq — How I Migrated BEBO to GPT-OSS 120B",
+    "description": "A real-world LLM migration: benchmarking GPT-OSS 120B against Llama 3.3 70B on Groq, discovering undocumented free-tier limits, and building an automatic fallback chain.",
+    "author": {
+      "@type": "Person",
+      "name": "Bhavik Thakkar",
+      "url": "https://bhavikthakkar.me"
+    },
+    "publisher": {"@type": "Person", "name": "Bhavik Thakkar"},
+    "datePublished": "2026-08-29",
+    "dateModified": "2026-08-29",
+    "image": "https://bhavik8025.github.io/BEBO-the-PET/bebo-avatar.png",
+    "mainEntityOfPage": "https://bhavik8025.github.io/BEBO-the-PET/groq-llama-to-gpt-oss-migration.html",
+    "keywords": "llama 3.3 70b deprecated, groq, gpt-oss 120b, model migration, LLM"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://bhavik8025.github.io/BEBO-the-PET/"},
+      {"@type": "ListItem", "position": 2, "name": "Migrating from Llama 3.3 to GPT-OSS 120B", "item": "https://bhavik8025.github.io/BEBO-the-PET/groq-llama-to-gpt-oss-migration.html"}
+    ]
+  }
+  </script>
+
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#12131f;--bg2:#16172a;--card:#1a1c2e;--purple:#7c5cfc;--lpur:#a78bfa;--dpur:#2d1b69;--text:#eef2ff;--muted:#8b8fa8;--cyan:#22d3ee;--green:#10b981;--yellow:#fbbf24;--red:#ef4444}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;line-height:1.65}
+    a{color:var(--lpur);text-decoration:none}
+    a:hover{color:var(--purple)}
+    .container{max-width:860px;margin:0 auto;padding:0 24px}
+    nav{position:sticky;top:0;z-index:100;background:rgba(18,19,31,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(124,92,252,.18);padding:13px 0}
+    nav .inner{max-width:1000px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{font-weight:800;font-size:17px;color:var(--text);display:flex;align-items:center;gap:10px}
+    .nav-logo img{width:32px;height:32px;object-fit:contain}
+    .nav-logo span{color:var(--lpur)}
+    .nav-links{display:flex;gap:22px;align-items:center}
+    .nav-links a{color:var(--muted);font-size:14px}
+    .nav-links a:hover{color:var(--text)}
+    .nav-links a.active{color:var(--lpur);font-weight:600}
+    .crumbs{font-size:13px;color:var(--muted);margin:28px 0 0}
+    h1{font-size:clamp(28px,4.2vw,40px);font-weight:800;margin:16px 0 12px;background:linear-gradient(135deg,var(--text) 0%,var(--lpur) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2}
+    .sub{color:var(--muted);font-size:16px;margin-bottom:14px}
+    .meta{font-size:13px;color:var(--muted);padding-bottom:22px;border-bottom:1px solid rgba(124,92,252,.12);margin-bottom:36px}
+    .meta strong{color:var(--lpur)}
+    h2{font-size:25px;font-weight:800;margin:48px 0 14px;color:var(--text)}
+    h3{font-size:18px;font-weight:700;margin:28px 0 10px;color:var(--text)}
+    p{color:var(--muted);font-size:15px;margin-bottom:14px}
+    p strong{color:var(--text)}
+    ul,ol{color:var(--muted);font-size:15px;margin:0 0 16px 22px}
+    li{margin-bottom:8px}
+    li strong{color:var(--text)}
+    .callout{background:var(--card);border-left:3px solid var(--purple);border-radius:0 12px 12px 0;padding:18px 22px;margin:22px 0}
+    .callout.warn{border-left-color:var(--yellow)}
+    .callout.win{border-left-color:var(--green)}
+    .callout p:last-child{margin-bottom:0}
+    pre{background:#0d0e18;border:1px solid rgba(124,92,252,.2);border-radius:12px;padding:18px;overflow-x:auto;font-size:13px;line-height:1.7;color:var(--muted);margin:18px 0}
+    pre .k{color:var(--lpur)}
+    pre .c{color:#4a4e69}
+    pre .g{color:var(--green)}
+    code{background:var(--dpur);color:var(--lpur);padding:2px 7px;border-radius:5px;font-size:13px;font-family:'Consolas',monospace}
+    .table-wrap{overflow-x:auto;margin:18px 0}
+    table{width:100%;border-collapse:collapse;border-radius:12px;overflow:hidden;font-size:14px;min-width:460px}
+    th,td{padding:11px 16px;text-align:left}
+    thead tr{background:var(--dpur)}
+    thead th{color:var(--lpur);font-weight:700;font-size:13px}
+    tbody tr:nth-child(odd){background:var(--card)}
+    tbody tr:nth-child(even){background:var(--bg2)}
+    td:first-child{color:var(--text);font-weight:600}
+    td{color:var(--muted)}
+    .hl{color:var(--green);font-weight:700}
+    .lo{color:var(--muted)}
+    .cta-box{margin:52px 0 44px;text-align:center;background:var(--card);border:1px solid rgba(124,92,252,.25);border-radius:18px;padding:36px 24px}
+    .cta-box img{width:84px;margin-bottom:14px;filter:drop-shadow(0 0 24px rgba(124,92,252,.5))}
+    .cta-box h2{margin:0 0 8px;font-size:22px}
+    .cta-box p{margin-bottom:22px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:9999px;font-weight:600;font-size:16px;background:var(--purple);color:#fff;transition:all .2s}
+    .btn:hover{background:var(--lpur);color:var(--bg);transform:translateY(-2px)}
+    .explore{margin:48px 0;padding-top:32px;border-top:1px solid rgba(124,92,252,.12)}
+    .explore h2{font-size:18px;margin:0 0 16px;color:var(--lpur)}
+    .explore-links{display:flex;flex-wrap:wrap;gap:12px}
+    .explore-links a{background:var(--card);border:1px solid rgba(124,92,252,.2);padding:10px 20px;border-radius:9999px;font-size:14px;color:var(--text)}
+    .explore-links a:hover{border-color:var(--lpur)}
+    footer{padding:32px 0;text-align:center;border-top:1px solid rgba(124,92,252,.1);color:var(--muted);font-size:13px;margin-top:40px}
+    @media(max-width:640px){.nav-links{display:none}}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="index.html" class="nav-logo"><img src="bebo-avatar.png" alt="BEBO the PET avatar" />BEBO <span>the PET</span></a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="how-it-works.html">How It Works</a>
+      <a href="compare.html">Compare</a>
+      <a href="faq.html">FAQ</a>
+      <a href="download.html">Download</a>
+      <a href="https://github.com/bhavik8025/BEBO-the-PET" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <p class="crumbs"><a href="index.html">Home</a> › Migrating from Llama 3.3 to GPT-OSS 120B</p>
+  <h1>Llama 3.3 70B Is Being Retired on Groq. Here's How I Migrated.</h1>
+  <p class="sub">Groq is decommissioning <code>llama-3.3-70b-versatile</code> on <strong>August 16, 2026</strong>. I run a free AI desktop app on that model. This is what the migration actually involved — including the benchmarks, the limits the docs gloss over, and the mistakes that cost me time.</p>
+  <p class="meta">By <strong>Bhavik Thakkar</strong> · Creator of <a href="index.html">BEBO the PET</a> · August 2026</p>
+
+  <h2>The email nobody wants</h2>
+  <p>Groq sent a deprecation notice: <code>llama-3.3-70b-versatile</code> would be decommissioned on <strong>August 16, 2026</strong>, with <code>openai/gpt-oss-120b</code> and <code>qwen/qwen3.6-27b</code> as the recommended replacements. This applies to free and developer-tier usage; committed-spend enterprise contracts are unaffected.</p>
+  <p>I maintain <a href="index.html">BEBO the PET</a>, a free open-source AI assistant that lives on your Windows desktop. Llama 3.3 70B was its entire brain. Every summarise, every email draft, every grammar fix ran through it. After August 16, every one of those buttons would return an error for every user who had ever installed the app.</p>
+
+  <div class="callout warn">
+    <p><strong>The important reframe:</strong> this is not a bug you introduced, and it is not something you can patch around. An upstream provider is removing a model that every app built on it depends on. Your only real choice is which replacement you move to, and how quickly.</p>
+  </div>
+
+  <h2>Step 1: Benchmark before you believe anything</h2>
+  <p>The recommended replacement being "recommended" doesn't tell you whether it's actually good for <em>your</em> workload. Before changing a single line of production code, I ran the same task through all three models with identical parameters — same system prompt, same temperature, same <code>max_tokens</code>.</p>
+  <p>The test was a deliberately broken sentence for grammar correction, which is BEBO's most latency-sensitive task:</p>
+  <pre><span class="c">// Same params across all three: temperature 0.05, top_p 0.9, max_tokens 500</span>
+<span class="k">const</span> body = {
+  model,
+  temperature: <span class="g">0.05</span>,
+  max_tokens: <span class="g">500</span>,
+  messages: [
+    { role: <span class="g">'system'</span>, content: SYSTEM_PROMPT },
+    { role: <span class="g">'user'</span>,   content: BROKEN_SENTENCE }
+  ]
+};</pre>
+
+  <p>Measured results, using each response's own <code>completion_time</code> from the API rather than wall-clock time:</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Model</th><th>Throughput</th><th>Output quality</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr><td>openai/gpt-oss-120b</td><td class="hl">~481 tok/s</td><td>Correct, natural phrasing</td><td class="hl">Chosen — primary</td></tr>
+      <tr><td>openai/gpt-oss-20b</td><td class="hl">~971 tok/s</td><td>Correct, slightly clumsier</td><td class="hl">Chosen — fallback</td></tr>
+      <tr><td>llama-3.3-70b-versatile</td><td class="lo">~428 tok/s</td><td>Correct</td><td class="lo">Being retired</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="callout win">
+    <p><strong>The surprise:</strong> the replacement was <em>faster</em> than the model being retired — roughly 12% higher throughput on the same task. I had assumed a forced migration meant accepting a downgrade. It didn't. Benchmark before you assume.</p>
+  </div>
+
+  <h2>Step 2: The free-tier limits nobody mentions</h2>
+  <p>This is where I found a genuine problem — not with the migration, but with claims I had been making for months.</p>
+  <p>My README, website and launch materials all said BEBO gave you <strong>14,400 free requests per day</strong>. That number came from multiplying the requests-per-minute limit by the minutes in a day. It was never real. Groq enforces a separate, much lower daily cap.</p>
+  <p>The actual documented free-tier limits:</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Limit</th><th>gpt-oss-120b</th><th>gpt-oss-20b</th><th>llama-3.3-70b</th></tr></thead>
+    <tbody>
+      <tr><td>Requests / minute</td><td>30</td><td>30</td><td>30</td></tr>
+      <tr><td>Requests / day</td><td class="hl">1,000</td><td class="hl">1,000</td><td>1,000</td></tr>
+      <tr><td>Tokens / minute</td><td>8,000</td><td>8,000</td><td>12,000</td></tr>
+      <tr><td>Tokens / day</td><td class="hl">200,000</td><td class="hl">200,000</td><td>100,000</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>So the honest figure was <strong>1,000 requests per day</strong> — about 40 AI tasks every hour, all day, which is still far more than any realistic desktop user needs. But it wasn't 14,400, and it never had been.</p>
+
+  <div class="callout">
+    <p><strong>If you take one thing from this post:</strong> a forced migration is a good moment to audit every number you have published. I found an inaccurate claim repeated across 25+ files. It wasn't caused by the deprecation — the deprecation just made me look.</p>
+  </div>
+
+  <h2>Step 3: Build a fallback chain, not a swap</h2>
+  <p>The naive fix is to change one string and ship. I did something slightly more durable: a chain of models tried in order, so a busy or rate-limited primary doesn't take the app down.</p>
+  <pre><span class="c">// One constant. The next migration is a one-line change.</span>
+<span class="k">const</span> GROQ_MODELS = [
+  <span class="g">'openai/gpt-oss-120b'</span>,  <span class="c">// primary — best quality</span>
+  <span class="g">'openai/gpt-oss-20b'</span>    <span class="c">// fallback — faster, separate quota</span>
+];
+
+<span class="k">for</span> (<span class="k">const</span> model <span class="k">of</span> GROQ_MODELS) {
+  <span class="k">const</span> res = <span class="k">await</span> callGroq(model, payload);
+  <span class="k">if</span> (res.ok) <span class="k">return</span> res;
+  <span class="c">// 429 or 5xx — try the next model instead of failing</span>
+}</pre>
+  <p>Two benefits beyond resilience. The fallback has its own quota, so hitting a limit on one model doesn't stop the app. And critically, the model name now lives in <strong>exactly one place</strong>. When Groq retires GPT-OSS someday, the code change is a single line.</p>
+
+  <h3>The mistake that cost me the most time</h3>
+  <p>Before this refactor, the model name was hardcoded in two files — the AI service and the API-key validation routine. I changed one and not the other. Key validation silently kept calling a model that was about to disappear. It would have kept working right up until it didn't.</p>
+  <p>Grep for your model string across the entire repository, not just the file you think owns it.</p>
+
+  <h2>Step 4: Migrate the users, not just the code</h2>
+  <p>Shipping the new version fixes nothing for people who already installed the old one. Desktop apps don't refresh like websites do — an installed binary keeps running the retired model until the user actively updates.</p>
+  <p>What actually reaches existing users:</p>
+  <ul>
+    <li><strong>An in-app update notice.</strong> The new version checks the releases endpoint on launch and shows a banner when something newer exists. This is the only channel that reaches someone who never reads your README.</li>
+    <li><strong>A warning on the old release page.</strong> Anyone landing on the old version from a stale link sees the deadline and a link to the current build.</li>
+    <li><strong>Version-less artifact names.</strong> Renaming installers from <code>App.Setup.1.0.0.exe</code> to <code>App.Setup.exe</code> means every published <code>/releases/latest/download/…</code> link keeps working across future versions instead of rotting.</li>
+    <li><strong>Preserved settings.</strong> The new installer keeps the existing API key and preferences, so updating takes under a minute and requires no re-setup. Friction is what stops people from updating.</li>
+  </ul>
+
+  <div class="callout warn">
+    <p><strong>A CI trap worth knowing:</strong> my build pipeline failed twice after the version bump. First because <code>package-lock.json</code> still carried the old version and <code>npm ci</code> refuses to run on a mismatch. Then because electron-builder auto-enables publishing when it detects CI and fails without a token — fixed with <code>--publish never</code>, since releases are published deliberately, not by the build.</p>
+  </div>
+
+  <h2>What I'd do differently</h2>
+  <ol>
+    <li><strong>Keep the model name in one constant from day one.</strong> Hardcoding it twice is how you ship a half-migration.</li>
+    <li><strong>Ship the update checker before you need it.</strong> I built BEBO's in-app update notice <em>during</em> this migration. It would have been far more useful shipped a version earlier, already sitting in every install.</li>
+    <li><strong>Treat published numbers as code.</strong> Marketing claims scattered across a README, a website, a deck and image assets drift out of sync silently. Mine did.</li>
+    <li><strong>Benchmark the replacement before assuming a downgrade.</strong> Mine was faster.</li>
+  </ol>
+
+  <h2>The short version</h2>
+  <p>A provider retiring your model is genuinely disruptive, but it is also finite and fixable. Benchmark the replacements with your own workload, verify the limits rather than deriving them, put the model name behind one constant with a fallback, and remember that migrating the code is only half the job — the installed users are the other half.</p>
+  <p>BEBO now runs on GPT-OSS 120B with an automatic GPT-OSS 20B fallback. It's faster than before, still completely free, and the next migration will be a one-line change.</p>
+
+  <div class="cta-box">
+    <img src="bebo-avatar.png" alt="BEBO the PET robot" />
+    <h2>Try BEBO the PET</h2>
+    <p>A free, open-source AI assistant that lives on your Windows desktop. No subscription, no browser tabs.</p>
+    <a class="btn" href="https://github.com/bhavik8025/BEBO-the-PET/releases/latest" target="_blank" rel="noopener">&#8659; Download Free</a>
+  </div>
+
+  <div class="explore">
+    <h2>Explore more</h2>
+    <div class="explore-links">
+      <a href="index.html">&#127968; Home</a>
+      <a href="how-it-works.html">&#9881; How BEBO Works</a>
+      <a href="compare.html">&#9889; BEBO vs Browser AI</a>
+      <a href="faq.html">&#10067; FAQ</a>
+      <a href="download.html">&#8659; Download</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>Written by <strong>Bhavik Thakkar</strong> · <a href="https://bhavikthakkar.me" target="_blank" rel="noopener">bhavikthakkar.me</a> · <a href="https://github.com/bhavik8025" target="_blank" rel="noopener">GitHub</a></p>
+    <p style="margin-top:6px;">&copy; 2026 BEBO the PET · Free &amp; Open Source · MIT License</p>
+  </div>
+</footer>
+
+<script data-goatcounter="https://bebothepet.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>
