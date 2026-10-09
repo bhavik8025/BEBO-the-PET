@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>BEBO expression preview</title>
+  <!-- Loads the REAL pet.css so what you see is exactly what ships -->
+  <link rel="stylesheet" href="../src/renderer/pet/pet.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 18px;
+      background: #0b0f1a;
+      color: #e8f4ff;
+      font-family: Segoe UI, system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+    h1 { font-size: 17px; margin: 0 0 3px; }
+    p.sub { margin: 0 0 16px; color: #7d90aa; font-size: 12px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+    .cell {
+      background: #121a2b;
+      border: 1px solid rgba(124, 92, 252, 0.22);
+      border-radius: 12px;
+      padding: 6px 4px 8px;
+      text-align: center;
+    }
+    .label {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #a9c4e4;
+      letter-spacing: 0.3px;
+      margin-bottom: 2px;
+    }
+    .kind { font-size: 9px; color: #5f7characters; }
+    .kind { color: #6f8099; }
+    .new  { color: #6ee7a8; }
+    .old  { color: #6f8099; }
+    /* Each cell hosts a real pet-wrap at a slightly reduced scale so 20 fit */
+    .stage {
+      transform: scale(0.92);
+      transform-origin: top center;
+      height: 142px;
+      display: flex;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>BEBO expressions — live preview</h1>
+  <p class="sub">Rendered with the real pet.css. Avatar is untouched: every expression is motion plus the drawn effect layer.</p>
+  <div class="grid" id="grid"></div>
+
+  <script>
+    const EXPRESSIONS = [
+      ['idle',       'idle',       'old'],
+      ['blink',      'blink',      'new'],
+      ['sway',       'sway',       'new'],
+      ['lookAround', 'look around','new'],
+      ['stretch',    'stretch',    'new'],
+      ['yawn',       'yawn',       'new'],
+      ['sleeping',   'sleeping',   'new'],
+      ['wakeUp',     'wake up',    'new'],
+      ['jump',       'jump',       'new'],
+      ['dance',      'dance',      'new'],
+      ['wave',       'wave',       'new'],
+      ['celebrate',  'celebrate',  'new'],
+      ['happy',      'happy',      'old'],
+      ['success',    'success',    'old'],
+      ['excited',    'excited',    'old'],
+      ['thinking',   'thinking',   'old'],
+      ['curious',    'curious',    'old'],
+      ['listening',  'listening',  'old'],
+      ['confused',   'confused',   'old'],
+      ['error',      'error',      'old']
+    ];
+
+    const grid = document.getElementById('grid');
+    for (const [state, label, kind] of EXPRESSIONS) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.innerHTML = `
+        <div class="label">${label}</div>
+        <div class="kind ${kind}">${kind === 'new' ? 'NEW' : 'existing'}</div>
+        <div class="stage">
+          <main class="pet-wrap-host" data-fx="${state}" style="position:relative;width:132px;height:148px;display:grid;place-items:end center;padding-bottom:6px;">
+            <img class="pet-${state}" src="../assets/icon.png" alt=""
+                 style="width:80px;height:80px;object-fit:contain;transform-origin:50% 92%;
+                        filter:drop-shadow(0 6px 14px rgba(80,180,255,.45));" />
+            <div id="pet-fx" style="position:absolute;inset:0;pointer-events:none;">
+              <span class="fx-z fx-z1">z</span>
+              <span class="fx-z fx-z2">z</span>
+              <span class="fx-z fx-z3">z</span>
+              <span class="fx-spark fx-s1"></span>
+              <span class="fx-spark fx-s2"></span>
+              <span class="fx-spark fx-s3"></span>
+              <span class="fx-spark fx-s4"></span>
+              <span class="fx-spark fx-s5"></span>
+              <span class="fx-mark">?</span>
+              <span class="fx-drop"></span>
+              <span class="fx-yawn">~</span>
+            </div>
+          </main>
+        </div>`;
+      grid.appendChild(cell);
+    }
+
+    // One-shot animations would play once and freeze; replay them on a loop so
+    // every tile stays alive while you look at the sheet.
+    const ONE_SHOT = ['blink','lookAround','stretch','yawn','wakeUp','jump','wave',
+                      'celebrate','happy','success','excited','confused','error','sway','dance'];
+    setInterval(() => {
+      for (const state of ONE_SHOT) {
+        document.querySelectorAll('.pet-' + state).forEach((el) => {
+          el.style.animation = 'none';
+          void el.offsetWidth;          // force reflow so the animation restarts
+          el.style.animation = '';
+        });
+        document.querySelectorAll(`[data-fx="${state}"]`).forEach((host) => {
+          host.querySelectorAll('span').forEach((s) => {
+            s.style.animation = 'none'; void s.offsetWidth; s.style.animation = '';
+          });
+        });
+      }
+    }, 3400);
+  </script>
+</body>
+</html>

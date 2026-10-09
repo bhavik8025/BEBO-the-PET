@@ -11,6 +11,44 @@ let lastOutput = '';
 // Streaming makes a Stop button possible: the panel can abort mid-answer.
 let activeTask = null;
 
+/* ── Click-through ────────────────────────────────────────────────────────
+   The pet window is bigger than BEBO so animations are not clipped, but the
+   transparent surplus must not swallow clicks meant for the desktop.
+
+   The cursor is hit-tested here in the main process rather than in the
+   renderer: that would depend on setIgnoreMouseEvents({ forward: true })
+   delivering mousemove to the page, which was verified NOT to happen on this
+   setup, leaving the pet permanently unclickable. Reading the global cursor
+   position needs no event forwarding and cannot get stuck. */
+const PET_BODY = { width: 80, height: 80, bottomInset: 6 };
+let petIsDragging = false;
+
+function startClickThroughWatcher(petWindow) {
+  let overBody = null;                       // null = unknown, force first write
+
+  const tick = () => {
+    if (!petWindow || petWindow.isDestroyed()) return;
+    if (petIsDragging) return;               // never go click-through mid-drag
+    if (!petWindow.isVisible()) return;
+
+    const cursor = screen.getCursorScreenPoint();
+    const b = petWindow.getBounds();
+    const left = b.x + Math.round((b.width - PET_BODY.width) / 2);
+    const top = b.y + b.height - PET_BODY.bottomInset - PET_BODY.height;
+    const over =
+      cursor.x >= left && cursor.x <= left + PET_BODY.width &&
+      cursor.y >= top && cursor.y <= top + PET_BODY.height;
+
+    if (over !== overBody) {
+      overBody = over;
+      petWindow.setIgnoreMouseEvents(!over, { forward: true });
+    }
+  };
+
+  const timer = setInterval(tick, 80);       // cheap: one cursor read per tick
+  petWindow.on('closed', () => clearInterval(timer));
+}
+
 function sendClipboardSuggestion(panelWindow) {
   if (!panelWindow || panelWindow.isDestroyed()) return;
   if (readConfig().autoPaste === false) return;
@@ -153,11 +191,14 @@ function setupIPC({ petWindow, panelWindow }) {
     menu.popup();
   });
 
+  startClickThroughWatcher(petWindow);
+
   ipcMain.on('pet:hovered', (_, { entering }) => {
     sendPetState(petWindow, entering ? 'curious' : 'idle');
   });
 
   ipcMain.on('pet:drag-started', () => {
+    petIsDragging = true;
     sendPetState(petWindow, 'listening');
   });
 
@@ -167,6 +208,7 @@ function setupIPC({ petWindow, panelWindow }) {
   });
 
   ipcMain.on('pet:drag-ended', () => {
+    petIsDragging = false;
     sendPetState(petWindow, 'idle');
   });
 

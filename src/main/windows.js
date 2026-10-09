@@ -1,15 +1,24 @@
 const path = require('path');
 const { BrowserWindow, screen } = require('electron');
 
+// The pet image stays 80x80. The window is deliberately larger so animations
+// (rotation, jumps, dance) are not clipped by the window edge — an 80px square
+// rotated 10deg already needs ~93px of width. The extra area is transparent AND
+// click-through (see setupClickThrough), so it costs the user nothing.
+const PET_WINDOW = { width: 132, height: 148 };
+// Offsets chosen so BEBO's visible body lands in the same screen position it
+// occupied at the old 92x116 size.
+const PET_OFFSET = { right: 142, bottom: 184 };
+
 function createPetWindow() {
   const display = screen.getPrimaryDisplay();
   const { x, y, width, height } = display.workArea;
 
   const win = new BrowserWindow({
-    width: 92,
-    height: 116,
-    x: x + Math.max(24, width - 122),
-    y: y + Math.max(24, height - 152),
+    width: PET_WINDOW.width,
+    height: PET_WINDOW.height,
+    x: x + Math.max(24, width - PET_OFFSET.right),
+    y: y + Math.max(24, height - PET_OFFSET.bottom),
     transparent: true,
     frame: false,
     alwaysOnTop: true,
@@ -28,6 +37,12 @@ function createPetWindow() {
   win.loadFile(path.join(__dirname, '../renderer/pet/index.html'));
   win.setAlwaysOnTop(true, 'screen-saver', 1);
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+
+  // Start fully click-through. The renderer hit-tests the cursor against
+  // BEBO's body and re-enables clicks only over the pet itself, so the
+  // transparent area never swallows clicks meant for the desktop below.
+  // This also removes the dead strip the old 92x116 window had above the pet.
+  win.setIgnoreMouseEvents(true, { forward: true });
 
   return win;
 }
@@ -82,4 +97,4 @@ function createSetupWindow() {
   return win;
 }
 
-module.exports = { createPetWindow, createPanelWindow, createSetupWindow };
+module.exports = { createPetWindow, createPanelWindow, createSetupWindow, PET_WINDOW };

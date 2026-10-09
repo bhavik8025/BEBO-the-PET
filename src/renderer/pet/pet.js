@@ -32,6 +32,12 @@ function showBubble(text, autoHideMs = 0, source = 'system') {
   }
 }
 
+/* Click-through hit testing lives in the main process (ipc-router). Doing it
+   here would rely on setIgnoreMouseEvents({ forward: true }) delivering
+   mousemove to the renderer, which proved unreliable in testing: no events
+   arrived, so the window never became clickable again. Polling the global
+   cursor position in main does not depend on event forwarding at all. */
+
 petButton.addEventListener('mouseenter', () => {
   if (!isDragging) {
     hoverBubbleActive = true;
