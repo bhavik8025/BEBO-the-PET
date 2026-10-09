@@ -60,8 +60,12 @@ function launchBEBO() {
     panelWindow.setBackgroundColor('#f6f5fb');
   }
 
-  // Check GitHub for a newer release once the windows are up
+  // Check GitHub for a newer release once the windows are up.
+  // BUG FIX: this used to run only at launch, but BEBO auto-starts with Windows
+  // and often runs for weeks without a restart, so update notices never reached
+  // long-running installs. Re-check every 6 hours as well.
   setTimeout(() => checkForUpdates(panelWindow), 4000);
+  setInterval(() => checkForUpdates(panelWindow), 6 * 60 * 60 * 1000);
 
   // Anonymous daily install ping (opt-out in settings) — always fail-silent
   setTimeout(sendDailyPing, 7000);

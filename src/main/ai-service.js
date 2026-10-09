@@ -12,106 +12,144 @@ const GROQ_MODELS = [
 ];
 const { getGroqKey } = require('./config');
 
-// Global system prompt — enforces plain text and clean output for every task
-const SYSTEM_PROMPT = `You are a precise, expert-level desktop productivity assistant running inside a lightweight desktop app.
+// Global system prompt — the output contract in each task overrides nothing here
+const SYSTEM_PROMPT = `You are BEBO, a desktop productivity assistant. You transform text.
 
-CRITICAL RULES — follow these without exception:
-1. Return ONLY the final result. No greetings, no preamble, no "Here is your...", no "Sure!", no closing remarks, no explanations.
-2. Never use markdown. No asterisks, no hashes, no backticks, no dashes as bullet points, no bold, no italics, no numbered lists with dots.
-3. Write in clean plain text only. Use line breaks to separate ideas where needed.
-4. Be precise, specific, and high quality. Every word must earn its place.
-5. Match the task exactly — do not go beyond what is asked.`;
+ABSOLUTE RULES
+Return only the finished result. No preamble, no commentary, no sign-off.
+Plain text only. Never use markdown: no *, #, \`, bullet characters, or numbered lists.
+Never use em dashes. Use commas, full stops or colons instead.
+Follow the OUTPUT CONTRACT exactly. The contract overrides everything else.`;
 
 const TASK_PROMPTS = {
 
-  summarize: `ROLE: You are a senior analyst and executive communicator who has spent 20 years condensing complex information for time-pressed decision makers.
+  summarize: `TASK
+Summarize the input text.
 
-OBJECTIVE: Read the entire input carefully and produce a razor-sharp summary that captures everything important — without a single wasted word.
+OUTPUT CONTRACT
+Line 1: the single most important conclusion, one sentence.
+Lines 2-6: one distinct supporting fact per line (3 to 5 lines), each a complete
+standalone idea, paraphrased not copied.
+Final line: begins "So what: " then one sentence on why it matters.
+Hard limits: under 180 words. Plain text. No bullets, numbers or headers.
 
-CONTEXT: The user needs to fully understand a piece of text — an article, report, email thread, research paper, or meeting notes — without reading it themselves.
+EXEMPLAR
+Input: "Q3 revenue rose 42% to $8.1M, led by APAC where new enterprise logos tripled. Margins improved to 28% from 21%. Churn held flat at 4%."
+Output:
+Q3 was the strongest quarter on record, with revenue up 42% to $8.1M.
+APAC drove the growth, tripling its count of new enterprise customers.
+Margins widened sharply to 28%, up from 21% a year earlier.
+Churn was unchanged at 4%, so the growth is net new rather than recovered.
+So what: the APAC motion is working and deserves more investment.
 
-INSTRUCTIONS:
-Write the summary in this exact structure, in plain text with no symbols or formatting:
+GUARDRAILS
+Use only facts present in the input. Never copy a sentence verbatim.`,
 
-First line — One powerful sentence that captures the single most important point or conclusion of the entire text.
+  humanize: `TASK
+Rewrite the input so it reads as human-written. Keep every fact and the intent.
 
-Supporting lines — Write each major supporting point, finding, or detail on its own line. Aim for 3 to 6 lines. Each line should stand alone as a clear, complete idea. Paraphrase — do not copy from the original.
+REMOVE THESE FINGERPRINTS
+Characters: em dashes, non-breaking hyphens, zero-width characters, inconsistent curly quotes.
+Vocabulary: delve, tapestry, testament, landscape, realm, navigate, leverage, robust,
+seamless, elevate, unlock, harness, foster, pivotal, crucial, myriad, plethora, underscore.
+Constructions: "It's not just X, it's Y", rule-of-three lists where two would do,
+"In today's fast-paced world", "it's worth noting", "it's important to remember",
+"Firstly", "Moreover", "Furthermore", "In conclusion".
+Corporate filler: "hope this finds you well", "circle back", "touch base",
+"going forward", "synergy", "best practices", "value-add", "as per our conversation".
 
-Final line — One sentence on the key implication: what this means, what should happen next, or why it matters.
+REWRITE RULES
+Vary sentence length deliberately: uniform rhythm is the strongest machine tell.
+Include at least one sentence under 6 words. Let the others fall at natural
+lengths. Never pad a sentence to make it longer.
+Active voice. Concrete nouns over abstractions. Ordinary punctuation only.
+Keep every fact, number and name exactly as given. Add nothing.
 
-Never add anything not present in the original. Never copy sentences verbatim. Keep total response under 200 words.`,
+OUTPUT CONTRACT
+Return only the rewritten text. Plain text.
+Keep every fact. The text may get shorter as filler is removed, and that is correct.
+Never pad to reach a length. Never drop a fact to save space.
 
-  humanize: `ROLE: You are a master of authentic human voice — a specialist who transforms robotic, AI-generated, or stiff text into writing that feels warm, real, and genuinely human.
+SELF-CHECK BEFORE ANSWERING
+1 Zero em dashes? 2 No banned vocabulary? 3 Sentence lengths genuinely varied?
+4 Every original fact intact? Fix any failure before returning.`,
 
-OBJECTIVE: Rewrite the input so it sounds like it was written by a thoughtful, real person — not a machine or a corporate template. The reader should feel a human on the other side.
+  simplify: `TASK
+Rewrite the input in plain, everyday language anyone can understand.
 
-CONTEXT: The user has text that feels cold, formulaic, AI-generated, or overly formal. They want it to connect emotionally and read naturally without losing any of the original meaning.
+OUTPUT CONTRACT
+Keep every fact, number and name. Short sentences, 12 to 18 words, never over 25.
+When a technical term must stay, explain it inline in plain words, not in brackets.
+Within 20% of the original length. Plain text, no markdown, no headers.
 
-INSTRUCTIONS:
-- Read the full input and deeply understand the intent, message, and context before writing a single word.
-- Rewrite with natural rhythm — alternate between short, punchy sentences and slightly longer flowing ones. Avoid monotonous sentence length.
-- Strip every corporate filler phrase without mercy: "I hope this email finds you well", "please do not hesitate to reach out", "as per our conversation", "going forward", "leverage", "synergy", "circle back", "touch base", "best practices", "value-add", and all similar dead phrases.
-- Replace passive voice with direct, active language wherever possible.
-- Keep every fact, figure, name, and core message exactly intact — do not add opinions or new information.
-- The final result should feel like something a real, confident, caring person wrote — not something generated.
-- Return only the rewritten text. No commentary, no explanation.`,
+EXEMPLAR
+Input: "The agreement stipulates that remuneration shall be disbursed on a bi-monthly basis, contingent upon satisfactory fulfilment of contractual deliverables."
+Output:
+The agreement says you get paid twice a month. You only get paid if you finish the work you agreed to do.
 
-  simplify: `ROLE: You are a world-class plain language expert and science communicator — someone who can take the most complex, dense, or technical content and make it instantly clear to anyone.
+GUARDRAILS
+Simple does not mean childish. Do not add facts. Do not drop facts.`,
 
-OBJECTIVE: Rewrite the input in simple, easy-to-understand language so that any reader — regardless of background — can grasp it immediately without losing the accuracy or completeness of the information.
+  draft_email: `TASK
+Write a complete, ready-to-send professional email from the user's notes.
 
-CONTEXT: The user has text that is complex, technical, academic, legal, or full of jargon. They need to understand it quickly or share it with someone who is not an expert in the field.
+OUTPUT CONTRACT
+Line 1: "Subject: " followed by a specific subject line, never generic.
+Then a blank line, then a greeting appropriate to the context.
+Body: 2 to 4 short paragraphs. The first sentence states the purpose directly.
+Close with one clear next step, then a sign-off line, then [Your Name].
+Under 200 words total. Plain text, no markdown.
 
-INSTRUCTIONS:
-- Read the entire input and identify every complex term, jargon phrase, and convoluted sentence.
-- Rewrite using short sentences and everyday words. If a simpler word exists, use it.
-- When a technical term must be kept, follow it immediately with a plain-language explanation in natural flow — not in brackets.
-- Break long, tangled sentences into two or three short clear ones.
-- Keep every key fact, data point, and meaning completely intact — simplifying language does not mean removing content.
-- Do not talk down to the reader — simple does not mean childish. Aim for clear and confident.
-- Do not add information that is not in the original.
-- Return only the simplified text. No commentary.`,
+EXEMPLAR
+Input: "tell the vendor we're delaying the order to next quarter, budget freeze"
+Output:
+Subject: Order Postponed to Q1 Due to Budget Freeze
 
-  draft_email: `ROLE: You are a senior business communication strategist with decades of experience writing high-impact professional emails across industries — from cold outreach to executive updates to sensitive negotiations.
+Hi [Name],
 
-OBJECTIVE: Write a complete, polished, ready-to-send professional email based on the user's input, which may be rough notes, a topic, bullet points, or a draft they want improved.
+I'm writing to let you know we need to postpone our order until next quarter. A company-wide budget freeze is in effect through the end of this quarter.
 
-CONTEXT: The user needs an email they can send immediately with minimal editing. It must be professional, clear, appropriately toned, and structured to get a response or result.
+Nothing about our requirements has changed, and we would like to pick this up in January. I will confirm exact volumes once the new budget is approved.
 
-INSTRUCTIONS:
-Write the email in this exact structure using plain text only — no markdown, no symbols, no formatting:
+Could you let me know whether current pricing holds until then?
 
-First line: Subject: [write a specific, clear, relevant subject line — never generic]
+Best regards,
+[Your Name]
 
-One blank line.
+GUARDRAILS
+Never invent names, dates, numbers or commitments that are not in the input.
+Use [Name] and [Your Name] placeholders when they are unknown.`,
 
-Greeting: Use an appropriate opening based on context. If formal, use "Dear [Name],". If neutral, use "Hi [Name],". If no name is given, use a sensible default.
+  fix_grammar: `TASK
+Correct grammar, spelling and punctuation errors. Change nothing else.
 
-Body: First sentence states the exact purpose of the email — no warm-up fluff. Keep the body to 2 to 4 focused paragraphs. Each paragraph covers one clear point. No padding, no repetition.
+OUTPUT CONTRACT
+Return the corrected text only, at the same length and in the same voice.
+Preserve the author's tone, vocabulary, slang, formality and structure exactly.
+Plain text. If the input has no errors, return it completely unchanged.
 
-Closing: End with a clear next step or call to action where appropriate. Then a professional sign-off on its own line, followed by [Your Name] on the next line.
+EXEMPLAR
+Input: "me and him was gonna go their but the shop were closed so we comes back"
+Output:
+He and I were going to go there, but the shop was closed, so we came back.
 
-Return only the email — nothing before the subject line, nothing after the sign-off.`,
+GUARDRAILS
+Do not rephrase sentences that are already correct. Do not improve style.
+Do not add or remove content. Never turn casual writing into formal writing.`,
 
-  fix_grammar: `ROLE: You are a meticulous professional copy editor with an obsessive eye for grammatical precision — the kind who has proofread for major publications and never lets a single error through.
+  ask_ai: `TASK
+Answer the user's question directly and completely.
 
-OBJECTIVE: Correct every grammatical, spelling, punctuation, and syntax error in the input text. Nothing more, nothing less.
+OUTPUT CONTRACT
+Lead with the answer in the first sentence, then supporting detail.
+Be specific: concrete numbers, names and steps beat general advice.
+Stop when the question is answered. Under 250 words unless it genuinely needs more.
+Plain text, no markdown.
 
-CONTEXT: The user wants their text fixed — not rewritten, not improved in style, not made more professional. They want exactly what they wrote, corrected for errors only.
-
-INSTRUCTIONS:
-- Fix all spelling mistakes.
-- Fix all grammatical errors — subject-verb agreement, tense consistency, article usage, pronoun agreement, and similar.
-- Fix all punctuation errors — missing commas, incorrect apostrophes, wrong quotation marks, missing full stops, and similar.
-- Fix sentence fragments and run-on sentences only if they are clear errors, not stylistic choices.
-- Do NOT change the tone, style, vocabulary, or voice. If the user writes casually, keep it casual. If formally, keep it formal.
-- Do NOT rephrase, restructure, or improve sentences that are grammatically correct — even if you could write them better.
-- Do NOT add new words, ideas, or information.
-- Do NOT remove content.
-- If the input has no errors, return it exactly as provided.
-- Return only the corrected text. No explanation of what was changed.`,
-
-  ask_ai: null // free-form — user input goes directly as the prompt
+GUARDRAILS
+No hedging preamble such as "It depends" or "Great question".
+If something is genuinely uncertain, say so in one clause and still give your best answer.
+If you do not know, say so plainly rather than guessing.`
 };
 
 function getTaskInstruction(type) {
@@ -143,20 +181,41 @@ function stripMarkdown(text) {
     .trim();
 }
 
+// BUG FIX: the model still emits em dashes and invisible characters despite the
+// system prompt forbidding them (observed: U+2011 in "Asia\u2011Pacific").
+// Enforce it in code rather than trusting the instruction.
+// Skipped for fix_grammar, whose contract is to change nothing but actual errors.
+function cleanTypography(text) {
+  return text
+    .replace(/\s+\u2014\s+/g, ', ')            // spaced em dash  -> comma
+    .replace(/\u2014/g, '-')                    // bare em dash    -> hyphen
+    .replace(/\s+\u2013\s+/g, ', ')            // spaced en dash  -> comma
+    .replace(/\u2013/g, '-')                    // bare en dash    -> hyphen
+    .replace(/\u2011/g, '-')                    // non-breaking hyphen
+    .replace(/[\u200b\u200c\u200d\ufeff]/g, '') // zero-width characters
+    .replace(/[ \t]{2,}/g, ' ');
+}
+
 // Per-task temperature — tuned for GPT-OSS on Groq (validated on 120B)
 function getTemperature(type) {
   const temperatures = {
-    summarize:   0.2, // needs accuracy and faithfulness to source
-    humanize:    0.65, // needs creative, natural, varied human voice
-    simplify:    0.3, // needs clarity — some creativity for natural flow
-    draft_email: 0.25, // structured and professional — low variance
-    fix_grammar: 0.05, // purely mechanical — as deterministic as possible
-    ask_ai:      0.5   // flexible — balanced for general queries
+    summarize:   0.2,  // faithful to source
+    humanize:    0.55, // natural variation without drifting off-facts
+    simplify:    0.25, // clear, low variance
+    draft_email: 0.3,  // structured but not robotic
+    fix_grammar: 0.0,  // purely mechanical
+    ask_ai:      0.4   // balanced
   };
   return temperatures[type] ?? 0.3;
 }
 
-// Max tokens per task
+// Max tokens per task.
+// BUG FIX: on Groq, max_tokens caps reasoning tokens AND visible output together.
+// GPT-OSS spends ~250 reasoning tokens at 'low' effort (measured, and far more at
+// higher effort), so every budget below carries headroom for that. Without it the
+// model can exhaust the budget while reasoning and return finish_reason=length
+// with completely EMPTY content.
+const REASONING_HEADROOM = 500;
 function getMaxTokens(type) {
   const tokens = {
     summarize:   800,
@@ -166,7 +225,7 @@ function getMaxTokens(type) {
     fix_grammar: 1200,
     ask_ai:      1500
   };
-  return tokens[type] ?? 1024;
+  return (tokens[type] ?? 1024) + REASONING_HEADROOM;
 }
 
 function requireInput(type, input) {
@@ -200,10 +259,8 @@ async function runAITask({ type, input, screenshotBase64 }) {
     };
   }
 
-  // Ask AI — user input is the full prompt, no wrapping
-  const userMessage = type === 'ask_ai'
-    ? cleanInput
-    : `${getTaskInstruction(type)}\n\n---\nINPUT TEXT:\n${cleanInput}\n---`;
+  // Every task now carries its own contract, ask_ai included
+  const userMessage = `${getTaskInstruction(type)}\n\n---\nINPUT TEXT:\n${cleanInput}\n---`;
 
   let lastError = 'The AI service is unavailable right now. Please try again in a moment.';
 
@@ -218,7 +275,6 @@ async function runAITask({ type, input, screenshotBase64 }) {
         model,
         temperature: getTemperature(type),
         max_tokens: getMaxTokens(type),
-        top_p: 0.9,
         stream: false,
         // GPT-OSS models are reasoning models — keep the thinking minimal
         // and hidden so responses stay instant and contain only the answer.
@@ -235,10 +291,17 @@ async function runAITask({ type, input, screenshotBase64 }) {
 
     if (response.ok) {
       const raw = data.choices?.[0]?.message?.content?.trim();
-      return {
-        ok: true,
-        output: raw ? stripMarkdown(raw) : 'The AI response was empty.'
-      };
+      if (!raw) {
+        // finish_reason 'length' with empty content means the token budget was
+        // consumed by reasoning. Fall through to the next model rather than
+        // handing the user a blank box.
+        lastError = 'The AI returned an empty response. Trying a lighter model.';
+        continue;
+      }
+      const cleaned = type === 'fix_grammar'
+        ? stripMarkdown(raw)
+        : cleanTypography(stripMarkdown(raw));
+      return { ok: true, output: cleaned };
     }
 
     lastError = data.error?.message || `Groq request failed with status ${response.status}.`;

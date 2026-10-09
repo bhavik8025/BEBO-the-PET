@@ -89,8 +89,10 @@ function setupShortcuts(windows) {
   currentHotkeys = getHotkeys();
   const failed = registerSet(currentHotkeys);
   if (failed.length) {
-    // A saved combo is taken by another app — fall back to defaults so BEBO stays usable
-    currentHotkeys = { ...DEFAULT_HOTKEYS };
+    // BUG FIX: this previously reset EVERY hotkey to defaults when any single
+    // combo failed, silently wiping the user's other custom bindings. Now only
+    // the combos that actually failed fall back to their default.
+    failed.forEach((action) => { currentHotkeys[action] = DEFAULT_HOTKEYS[action]; });
     registerSet(currentHotkeys);
   }
 }
