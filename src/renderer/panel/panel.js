@@ -19,7 +19,18 @@ const whatsnewTitle = document.getElementById('whatsnew-title');
 const whatsnewList = document.getElementById('whatsnew-list');
 const whatsnewOk = document.getElementById('whatsnew-ok');
 const telemetryToggle = document.getElementById('telemetry-toggle');
+const autoPasteToggle = document.getElementById('autopaste-toggle');
+const clipHint = document.getElementById('clip-hint');
+const clipClear = document.getElementById('clip-clear');
+const regenButton = document.getElementById('regen-button');
+const errorAction = document.getElementById('error-action');
+const apiKeyInput = document.getElementById('apikey-input');
+const apiKeySave = document.getElementById('apikey-save');
+const keyHint = document.getElementById('key-hint');
+const keyStatus = document.getElementById('key-status');
 const hotkeyButtons = Array.from(document.querySelectorAll('.hotkey-btn'));
+
+let lastRequest = null; // { type, input } — powers Regenerate
 
 let appHotkeys = {};
 let defaultHotkeys = {};
@@ -31,15 +42,25 @@ closeButton.addEventListener('click', () => {
   window.panelAPI.close();
 });
 
+function startTask(task, { regenerate = false } = {}) {
+  lastRequest = { type: task, input: input.value };
+  clipHint.hidden = true;
+  errorAction.hidden = true;
+  regenButton.hidden = true;
+  output.textContent = regenerate
+    ? `Regenerating ${task.replaceAll('_', ' ')}...`
+    : `Running ${task.replaceAll('_', ' ')}...`;
+  window.panelAPI.runTask({ type: task, input: input.value, regenerate });
+}
+
 document.querySelectorAll('[data-task]').forEach((button) => {
-  button.addEventListener('click', () => {
-    const task = button.dataset.task;
-    output.textContent = `Running ${task.replaceAll('_', ' ')}...`;
-    window.panelAPI.runTask({
-      type: task,
-      input: input.value
-    });
-  });
+  button.addEventListener('click', () => startTask(button.dataset.task));
+});
+
+regenButton.addEventListener('click', () => {
+  if (!lastRequest) return;
+  input.value = lastRequest.input;
+  startTask(lastRequest.type, { regenerate: true });
 });
 
 copyButton.addEventListener('click', async () => {
@@ -50,9 +71,40 @@ copyButton.addEventListener('click', async () => {
   }, 1200);
 });
 
-window.panelAPI.onTaskResult(({ output: result }) => {
+const ERROR_ACTIONS = {
+  key:    { label: 'Open key settings', run: () => { settingsOverlay.hidden = false; apiKeyInput.focus(); } },
+  update: { label: 'Check for updates',  run: () => window.panelAPI.openReleases() },
+  retry:  { label: 'Try again',          run: () => { if (lastRequest) startTask(lastRequest.type); } }
+};
+
+window.panelAPI.onTaskResult(({ output: result, ok, action }) => {
   output.textContent = result;
+  regenButton.hidden = !(ok && lastRequest);
+
+  const spec = action ? ERROR_ACTIONS[action] : null;
+  if (spec) {
+    errorAction.textContent = spec.label;
+    errorAction.onclick = spec.run;
+    errorAction.hidden = false;
+  } else {
+    errorAction.hidden = true;
+  }
 });
+
+/* ── Auto-paste from clipboard ─────────────────────────────────── */
+window.panelAPI.onClipboardSuggestion(({ text }) => {
+  if (input.value.trim()) return;      // never overwrite what the user typed
+  input.value = text;
+  clipHint.hidden = false;
+});
+
+clipClear.addEventListener('click', () => {
+  input.value = '';
+  clipHint.hidden = true;
+  input.focus();
+});
+
+input.addEventListener('input', () => { clipHint.hidden = true; });
 
 /* ── Theme ─────────────────────────────────────────────────────── */
 function applyTheme(theme) {
@@ -70,6 +122,27 @@ themeButton.addEventListener('click', () => {
 /* ── Telemetry opt-out ─────────────────────────────────────────── */
 telemetryToggle.addEventListener('change', () => {
   window.panelAPI.setTelemetry(telemetryToggle.checked);
+});
+
+autoPasteToggle.addEventListener('change', () => {
+  window.panelAPI.setAutoPaste(autoPasteToggle.checked);
+});
+
+/* ── Change API key ────────────────────────────────────────────── */
+apiKeySave.addEventListener('click', async () => {
+  const key = apiKeyInput.value.trim();
+  if (!key) { keyStatus.textContent = 'Paste a key first.'; return; }
+  apiKeySave.disabled = true;
+  keyStatus.textContent = 'Checking the key with Groq...';
+  const res = await window.panelAPI.changeApiKey(key);
+  apiKeySave.disabled = false;
+  if (res && res.ok) {
+    apiKeyInput.value = '';
+    keyHint.textContent = res.keyHint || '';
+    keyStatus.textContent = 'Key saved and verified.';
+  } else {
+    keyStatus.textContent = (res && res.error) || 'That key did not work.';
+  }
 });
 
 /* ── Hotkey remapping ──────────────────────────────────────────── */
@@ -193,6 +266,8 @@ whatsnewOk.addEventListener('click', () => {
   appHotkeys = { ...info.hotkeys };
   defaultHotkeys = { ...info.defaults };
   telemetryToggle.checked = info.telemetry !== false;
+  autoPasteToggle.checked = info.autoPaste !== false;
+  keyHint.textContent = info.keyHint || '';
 
   if (info.whatsNew && info.whatsNew.show) {
     whatsnewTitle.textContent = info.whatsNew.title;

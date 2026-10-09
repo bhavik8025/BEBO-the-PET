@@ -1,5 +1,23 @@
-const { desktopCapturer, ipcMain, Menu, screen } = require('electron');
+const { clipboard, desktopCapturer, ipcMain, Menu, screen } = require('electron');
 const { runAITask } = require('./ai-service');
+const { readConfig } = require('./config');
+
+// Auto-paste: when the panel opens with an empty input, offer whatever text is
+// already on the clipboard. Capped so a giant copy does not fill the box, and
+// skipped when the clipboard holds BEBO's own last output (no feedback loop).
+const CLIPBOARD_MAX = 8000;
+let lastOutput = '';
+
+function sendClipboardSuggestion(panelWindow) {
+  if (!panelWindow || panelWindow.isDestroyed()) return;
+  if (readConfig().autoPaste === false) return;
+  let text = '';
+  try { text = clipboard.readText() || ''; } catch (_) { return; }
+  const trimmed = text.trim();
+  if (!trimmed || trimmed.length > CLIPBOARD_MAX) return;
+  if (trimmed === lastOutput.trim()) return;
+  panelWindow.webContents.send('panel:clipboardSuggestion', { text: trimmed });
+}
 
 function sendPetState(petWindow, state, durationMs) {
   if (!petWindow || petWindow.isDestroyed()) return;
@@ -95,6 +113,10 @@ async function capturePrimaryScreen({ panelWindow }) {
 }
 
 function setupIPC({ petWindow, panelWindow }) {
+  // Hook the window's own show event rather than individual call sites: the
+  // panel can be opened from the pet click, the tray, or the global shortcut
+  // (which lives in shortcuts.js and never touches showPanel below).
+  panelWindow.on('show', () => sendClipboardSuggestion(panelWindow));
   ipcMain.on('pet:clicked', () => {
     sendPetState(petWindow, 'happy', 1200);
     togglePanel(panelWindow, petWindow);
@@ -150,7 +172,7 @@ function setupIPC({ petWindow, panelWindow }) {
     sendPetState(petWindow, 'idle');
   });
 
-  ipcMain.on('task:run', async (_, { type, input }) => {
+  ipcMain.on('task:run', async (_, { type, input, regenerate }) => {
     sendPetState(petWindow, 'thinking');
     petWindow.webContents.send('pet:showBubble', {
       text: type === 'explain_screen' ? 'Looking...' : 'Working...',
@@ -163,21 +185,26 @@ function setupIPC({ petWindow, panelWindow }) {
         : null;
       keepPetOnTop(petWindow);
 
-      const result = await runAITask({ type, input, screenshotBase64 });
+      const result = await runAITask({ type, input, screenshotBase64, regenerate });
+      if (result.ok) lastOutput = result.output;
       sendPetState(petWindow, result.ok ? 'success' : 'confused', 1400);
       petWindow.webContents.send('pet:showBubble', {
-        text: result.ok ? 'Done.' : 'Needs setup.',
+        text: result.ok ? 'Done.' : 'Hmm.',
         autoHideMs: 3000
       });
       panelWindow.webContents.send('task:result', {
         type,
-        output: result.output
+        output: result.output,
+        ok: result.ok,
+        action: result.action || null
       });
     } catch (error) {
       sendPetState(petWindow, 'error', 1400);
       panelWindow.webContents.send('task:result', {
         type,
-        output: `Something went wrong: ${error.message}`
+        output: 'Something went wrong inside BEBO. Try again, and if it keeps happening please report it on GitHub.',
+        ok: false,
+        action: 'retry'
       });
     }
   });

@@ -40,14 +40,22 @@
           <span class="voice-hint" title="Windows built-in voice typing — click into the box first">🎤 Win + H to dictate</span>
         </div>
         <textarea id="task-input" placeholder="Paste text and pick an action — or press Win + H and speak."></textarea>
+        <div id="clip-hint" class="clip-hint" hidden>
+          <span>📋 Pasted from clipboard</span>
+          <button id="clip-clear" type="button">Clear</button>
+        </div>
       </section>
 
       <section class="output-section">
         <div class="section-row">
           <label for="task-output">Output</label>
-          <button id="copy-button">Copy</button>
+          <div class="output-actions">
+            <button id="regen-button" hidden title="Run the same action again for a different result">Regenerate</button>
+            <button id="copy-button">Copy</button>
+          </div>
         </div>
         <pre id="task-output" contenteditable="true" spellcheck="false">Paste text and choose a quick action. If AI is not configured yet, I will show the setup step here.</pre>
+        <button id="error-action" class="error-action" hidden></button>
       </section>
 
       <footer>
@@ -68,11 +76,28 @@
         <div class="hotkey-row"><span>Hide / Show BEBO</span><button class="hotkey-btn" data-action="hide"></button></div>
         <div class="hotkey-row"><span>Open / Close Panel</span><button class="hotkey-btn" data-action="panel"></button></div>
         <div class="telemetry-row">
+          <label for="autopaste-toggle">
+            <input type="checkbox" id="autopaste-toggle" />
+            Auto-fill from clipboard
+          </label>
+          <p class="overlay-hint">When the panel opens with an empty input box, BEBO offers whatever text you last copied.</p>
+        </div>
+
+        <div class="telemetry-row">
           <label for="telemetry-toggle">
             <input type="checkbox" id="telemetry-toggle" />
             Anonymous install ping
           </label>
           <p class="overlay-hint">Once a day BEBO sends its version number and a random id — never your text, never anything personal. It only counts active installs. Untick to opt out.</p>
+        </div>
+
+        <div class="telemetry-row">
+          <label for="apikey-input">Groq API key <span id="key-hint" class="key-hint"></span></label>
+          <div class="key-row">
+            <input type="password" id="apikey-input" placeholder="Paste a new key to replace it" autocomplete="off" spellcheck="false" />
+            <button id="apikey-save" type="button">Save</button>
+          </div>
+          <p id="key-status" class="overlay-hint">Get a free key at groq.com. BEBO checks it before saving.</p>
         </div>
         <p id="hotkey-error" class="hotkey-error" hidden></p>
         <div class="overlay-actions">

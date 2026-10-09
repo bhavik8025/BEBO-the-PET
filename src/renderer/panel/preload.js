@@ -9,6 +9,9 @@ contextBridge.exposeInMainWorld('panelAPI', {
   setTheme: (theme) => ipcRenderer.send('app:setTheme', theme),
   saveHotkeys: (hotkeys) => ipcRenderer.invoke('app:saveHotkeys', hotkeys),
   setTelemetry: (on) => ipcRenderer.invoke('app:setTelemetry', on),
+  setAutoPaste: (on) => ipcRenderer.send('app:setAutoPaste', on),
+  changeApiKey: (key) => ipcRenderer.invoke('app:changeApiKey', key),
+  onClipboardSuggestion: (cb) => ipcRenderer.on('panel:clipboardSuggestion', (_, p) => cb(p)),
   whatsNewSeen: () => ipcRenderer.send('app:whatsNewSeen'),
   openReleases: () => ipcRenderer.send('app:openReleases'),
   onUpdateAvailable: (callback) => ipcRenderer.on('app:updateAvailable', (_, payload) => callback(payload))

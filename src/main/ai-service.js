@@ -235,7 +235,51 @@ function requireInput(type, input) {
   return null;
 }
 
-async function runAITask({ type, input, screenshotBase64 }) {
+// Turn raw API failures into something a person can act on.
+// `action` tells the panel which button to offer: key | update | retry | null.
+function friendlyError(status, rawMessage) {
+  const msg = String(rawMessage || '');
+
+  if (status === 401 || status === 403) {
+    return {
+      text: 'Your Groq API key was rejected. It may have been revoked or expired.\n\nOpen settings to paste a new key.',
+      action: 'key'
+    };
+  }
+  if (status === 429) {
+    if (/per day|RPD|TPD|daily/i.test(msg)) {
+      return {
+        text: "You've used up today's free Groq allowance (1,000 requests a day).\n\nIt resets at midnight UTC. BEBO will work normally again after that.",
+        action: null
+      };
+    }
+    return {
+      text: 'Groq is rate-limiting you for a few seconds, which happens on long or rapid requests.\n\nWait a moment and try again.',
+      action: 'retry'
+    };
+  }
+  if (status === 404 || /decommission|deprecat|does not exist/i.test(msg)) {
+    return {
+      text: 'The AI model BEBO uses is no longer available.\n\nThis usually means BEBO needs an update.',
+      action: 'update'
+    };
+  }
+  if (status === 413 || /context length|too large|maximum context|reduce the length/i.test(msg)) {
+    return {
+      text: 'That text is too long for one request.\n\nTry running it in smaller pieces.',
+      action: null
+    };
+  }
+  if (status >= 500) {
+    return {
+      text: 'Groq is having server trouble right now. This is on their side, not yours.\n\nTry again in a moment.',
+      action: 'retry'
+    };
+  }
+  return { text: msg || 'Something went wrong talking to Groq.', action: 'retry' };
+}
+
+async function runAITask({ type, input, screenshotBase64, regenerate }) {
   const cleanInput = input || '';
 
   const missingInput = requireInput(type, cleanInput);
@@ -247,14 +291,12 @@ async function runAITask({ type, input, screenshotBase64 }) {
   if (!apiKey) {
     return {
       ok: false,
+      action: 'key',
       output: [
-        'Groq API key is not configured.',
+        'No Groq API key is set up yet.',
         '',
-        'Add this to your .env file:',
-        'GROQ_API_KEY=your_key_here',
-        '',
-        'Get a free key at groq.com — no credit card needed.',
-        'Then restart the app.'
+        'Open settings and paste a free key from groq.com.',
+        'It takes about 30 seconds and needs no credit card.'
       ].join('\n')
     };
   }
@@ -262,10 +304,18 @@ async function runAITask({ type, input, screenshotBase64 }) {
   // Every task now carries its own contract, ask_ai included
   const userMessage = `${getTaskInstruction(type)}\n\n---\nINPUT TEXT:\n${cleanInput}\n---`;
 
-  let lastError = 'The AI service is unavailable right now. Please try again in a moment.';
+  let lastError = { text: 'The AI service is unavailable right now. Please try again in a moment.', action: 'retry' };
+
+  // Regenerate: nudge the temperature up a little so the user gets a genuinely
+  // different take rather than the same text back.
+  const temperature = regenerate
+    ? Math.min(getTemperature(type) + 0.15, 1)
+    : getTemperature(type);
 
   for (const model of GROQ_MODELS) {
-    const response = await fetch(GROQ_ENDPOINT, {
+    let response;
+    try {
+      response = await fetch(GROQ_ENDPOINT, {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
@@ -273,7 +323,7 @@ async function runAITask({ type, input, screenshotBase64 }) {
       },
       body: JSON.stringify({
         model,
-        temperature: getTemperature(type),
+        temperature,
         max_tokens: getMaxTokens(type),
         stream: false,
         // GPT-OSS models are reasoning models — keep the thinking minimal
@@ -285,7 +335,16 @@ async function runAITask({ type, input, screenshotBase64 }) {
           { role: 'user',   content: userMessage }
         ]
       })
-    });
+      });
+    } catch (networkError) {
+      // BUG FIX: a dropped connection used to escape as a raw "fetch failed"
+      // string. BEBO is always-on, so losing wifi mid-task is routine.
+      lastError = {
+        text: 'BEBO cannot reach Groq. Check your internet connection and try again.',
+        action: 'retry'
+      };
+      continue;
+    }
 
     const data = await response.json().catch(() => ({}));
 
@@ -295,7 +354,7 @@ async function runAITask({ type, input, screenshotBase64 }) {
         // finish_reason 'length' with empty content means the token budget was
         // consumed by reasoning. Fall through to the next model rather than
         // handing the user a blank box.
-        lastError = 'The AI returned an empty response. Trying a lighter model.';
+        lastError = { text: 'The AI returned an empty response.', action: 'retry' };
         continue;
       }
       const cleaned = type === 'fix_grammar'
@@ -304,15 +363,16 @@ async function runAITask({ type, input, screenshotBase64 }) {
       return { ok: true, output: cleaned };
     }
 
-    lastError = data.error?.message || `Groq request failed with status ${response.status}.`;
+    const rawMessage = data.error?.message || '';
+    lastError = friendlyError(response.status, rawMessage);
 
-    // Rate-limited or model retired — automatically try the next model
+    // Rate-limited or model retired — automatically try the backup model
     const tryNext = response.status === 429 || response.status === 404 ||
-      /decommission|deprecat|not found|does not exist/i.test(lastError);
+      /decommission|deprecat|not found|does not exist/i.test(rawMessage);
     if (!tryNext) break;
   }
 
-  return { ok: false, output: lastError };
+  return { ok: false, output: lastError.text, action: lastError.action };
 }
 
 module.exports = { runAITask, GROQ_MODELS };

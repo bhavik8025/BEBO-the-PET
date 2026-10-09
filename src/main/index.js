@@ -98,6 +98,9 @@ ipcMain.handle('app:getInfo', () => {
     version,
     modelLabel: prettyModelName(GROQ_MODELS[0]),
     telemetry: isTelemetryEnabled(),
+    autoPaste: cfg.autoPaste !== false,
+    // Only ever expose the last 4 characters, never the key itself
+    keyHint: cfg.GROQ_API_KEY ? `…${String(cfg.GROQ_API_KEY).slice(-4)}` : '',
     theme: cfg.theme === 'light' ? 'light' : 'dark',
     hotkeys: getHotkeys(),
     defaults: DEFAULT_HOTKEYS,
@@ -120,6 +123,20 @@ ipcMain.on('app:setTheme', (_, theme) => {
 ipcMain.handle('app:saveHotkeys', (_, hotkeys) => updateHotkeys(hotkeys));
 
 ipcMain.handle('app:setTelemetry', (_, on) => setTelemetryEnabled(on));
+
+ipcMain.on('app:setAutoPaste', (_, on) => writeConfig({ autoPaste: Boolean(on) }));
+
+// Change the API key without reinstalling. Previously the key could only ever
+// be set on the first-run screen, so an expired or revoked key left the user
+// stuck with no way out short of deleting config.json by hand.
+ipcMain.handle('app:changeApiKey', async (_, key) => {
+  const trimmed = String(key || '').trim();
+  if (!trimmed) return { ok: false, error: 'Paste a key first.' };
+  const check = await validateGroqKey(trimmed);
+  if (!check.ok) return check;
+  saveGroqKey(trimmed);
+  return { ok: true, keyHint: `…${trimmed.slice(-4)}` };
+});
 
 ipcMain.on('app:whatsNewSeen', () => {
   writeConfig({ lastSeenVersion: app.getVersion() });
