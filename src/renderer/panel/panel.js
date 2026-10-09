@@ -21,6 +21,7 @@ const whatsnewOk = document.getElementById('whatsnew-ok');
 const telemetryToggle = document.getElementById('telemetry-toggle');
 const autoPasteToggle = document.getElementById('autopaste-toggle');
 const clipHint = document.getElementById('clip-hint');
+const clipHintText = document.getElementById('clip-hint-text');
 const clipClear = document.getElementById('clip-clear');
 const regenButton = document.getElementById('regen-button');
 const stopButton = document.getElementById('stop-button');
@@ -119,7 +120,21 @@ window.panelAPI.onTaskResult(({ output: result, ok, action }) => {
 window.panelAPI.onClipboardSuggestion(({ text }) => {
   if (input.value.trim()) return;      // never overwrite what the user typed
   input.value = text;
+  clipHintText.textContent = '📋 Pasted from clipboard';
   clipHint.hidden = false;
+});
+
+/* ── Text grabbed from another app via the capture hotkey ──────── */
+window.panelAPI.onSelectionCaptured(({ text, reason }) => {
+  // Deliberate user action, so this DOES replace whatever was in the box.
+  input.value = text;
+  clipHintText.textContent = reason === 'truncated'
+    ? '✂️ Grabbed selection (shortened to fit)'
+    : '✂️ Grabbed selected text';
+  clipHint.hidden = false;
+  errorAction.hidden = true;
+  output.textContent = 'Pick an action above.';
+  regenButton.hidden = true;
 });
 
 clipClear.addEventListener('click', () => {

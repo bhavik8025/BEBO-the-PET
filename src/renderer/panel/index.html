@@ -41,7 +41,7 @@
         </div>
         <textarea id="task-input" placeholder="Paste text and pick an action — or press Win + H and speak."></textarea>
         <div id="clip-hint" class="clip-hint" hidden>
-          <span>📋 Pasted from clipboard</span>
+          <span id="clip-hint-text">📋 Pasted from clipboard</span>
           <button id="clip-clear" type="button">Clear</button>
         </div>
       </section>
@@ -76,6 +76,7 @@
         <div class="hotkey-row"><span>Wake BEBO</span><button class="hotkey-btn" data-action="wake"></button></div>
         <div class="hotkey-row"><span>Hide / Show BEBO</span><button class="hotkey-btn" data-action="hide"></button></div>
         <div class="hotkey-row"><span>Open / Close Panel</span><button class="hotkey-btn" data-action="panel"></button></div>
+        <div class="hotkey-row"><span>Grab selected text</span><button class="hotkey-btn" data-action="capture"></button></div>
         <div class="telemetry-row">
           <label for="autopaste-toggle">
             <input type="checkbox" id="autopaste-toggle" />

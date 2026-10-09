@@ -1,11 +1,14 @@
 const { globalShortcut, screen } = require('electron');
 const { readConfig, writeConfig } = require('./config');
+const { captureSelection } = require('./selection');
 
 const DEFAULT_HOTKEYS = {
   wake:  'CommandOrControl+Shift+W',
   // Moved off Ctrl+Shift+H so nothing feels close to Win+H (Windows voice typing)
   hide:  'CommandOrControl+Shift+B',
-  panel: 'CommandOrControl+Shift+P'
+  panel: 'CommandOrControl+Shift+P',
+  // E for "extract": avoids Ctrl+Shift+S, which many apps use for Save As
+  capture: 'CommandOrControl+Shift+E'
 };
 
 let windowsRef = null;
@@ -66,6 +69,39 @@ const HANDLERS = {
       panelWindow.focus();
       keepPetOnTop(petWindow);
     }
+  },
+
+  // Grab the selection from whatever app is in front, then bring it to BEBO.
+  // Nothing here may steal focus before the copy happens, or we would capture
+  // BEBO's own window instead of the user's text.
+  async capture() {
+    const { petWindow, panelWindow } = windowsRef;
+    if (!panelWindow || panelWindow.isDestroyed()) return;
+
+    if (petWindow && !petWindow.isDestroyed()) {
+      petWindow.webContents.send('pet:setState', { state: 'listening', durationMs: 1200 });
+    }
+
+    const { text, reason } = await captureSelection();
+
+    if (!text) {
+      // Nothing selected, or the focused app blocked synthetic input (anything
+      // running as Administrator does when BEBO is not elevated).
+      if (petWindow && !petWindow.isDestroyed()) {
+        petWindow.webContents.send('pet:setState', { state: 'confused', durationMs: 1600 });
+        petWindow.webContents.send('pet:showBubble', {
+          text: 'Select some text first.',
+          autoHideMs: 2600
+        });
+      }
+      return;
+    }
+
+    // Safe to show the panel now that the copy is done.
+    panelWindow.show();
+    panelWindow.focus();
+    keepPetOnTop(petWindow);
+    panelWindow.webContents.send('panel:selectionCaptured', { text, reason: reason || null });
   }
 };
 
