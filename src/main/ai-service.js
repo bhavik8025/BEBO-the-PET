@@ -279,7 +279,9 @@ function friendlyError(status, rawMessage) {
   return { text: msg || 'Something went wrong talking to Groq.', action: 'retry' };
 }
 
-async function runAITask({ type, input, screenshotBase64, regenerate }) {
+// onChunk — called with each token as it streams in, so the panel can render
+// progressively. signal — an AbortSignal from the panel's Stop button.
+async function runAITask({ type, input, screenshotBase64, regenerate, onChunk, signal }) {
   const cleanInput = input || '';
 
   const missingInput = requireInput(type, cleanInput);
@@ -312,11 +314,19 @@ async function runAITask({ type, input, screenshotBase64, regenerate }) {
     ? Math.min(getTemperature(type) + 0.15, 1)
     : getTemperature(type);
 
+  // Final tidy-up. Markdown stripping cannot run mid-stream because a token
+  // like ** can straddle two chunks, so the UI streams raw text for the speed
+  // and the cleaned version replaces it once the stream closes.
+  const finish = (raw) => (type === 'fix_grammar'
+    ? stripMarkdown(raw)
+    : cleanTypography(stripMarkdown(raw)));
+
   for (const model of GROQ_MODELS) {
     let response;
     try {
       response = await fetch(GROQ_ENDPOINT, {
       method: 'POST',
+      signal,
       headers: {
         'content-type': 'application/json',
         'authorization': `Bearer ${apiKey}`
@@ -325,7 +335,7 @@ async function runAITask({ type, input, screenshotBase64, regenerate }) {
         model,
         temperature,
         max_tokens: getMaxTokens(type),
-        stream: false,
+        stream: true,
         // GPT-OSS models are reasoning models — keep the thinking minimal
         // and hidden so responses stay instant and contain only the answer.
         reasoning_effort: 'low',
@@ -337,6 +347,9 @@ async function runAITask({ type, input, screenshotBase64, regenerate }) {
       })
       });
     } catch (networkError) {
+      if (networkError.name === 'AbortError') {
+        return { ok: false, output: 'Stopped.', aborted: true };
+      }
       // BUG FIX: a dropped connection used to escape as a raw "fetch failed"
       // string. BEBO is always-on, so losing wifi mid-task is routine.
       lastError = {
@@ -346,23 +359,58 @@ async function runAITask({ type, input, screenshotBase64, regenerate }) {
       continue;
     }
 
-    const data = await response.json().catch(() => ({}));
-
     if (response.ok) {
-      const raw = data.choices?.[0]?.message?.content?.trim();
-      if (!raw) {
-        // finish_reason 'length' with empty content means the token budget was
-        // consumed by reasoning. Fall through to the next model rather than
-        // handing the user a blank box.
+      let full = '';
+      let aborted = false;
+      try {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop();            // keep the trailing partial line
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed.startsWith('data:')) continue;
+            const payload = trimmed.slice(5).trim();
+            if (!payload || payload === '[DONE]') continue;
+            try {
+              const delta = JSON.parse(payload).choices?.[0]?.delta?.content;
+              if (delta) {
+                full += delta;
+                if (onChunk) onChunk(delta);
+              }
+            } catch (_) { /* ignore keep-alive and malformed frames */ }
+          }
+        }
+      } catch (streamError) {
+        if (streamError.name === 'AbortError') aborted = true;
+        else if (!full) {
+          lastError = { text: 'The connection dropped mid-answer. Try again.', action: 'retry' };
+          continue;                        // nothing shown yet, safe to retry
+        }
+      }
+
+      // Deliberately stopped: keep whatever already arrived.
+      if (aborted) {
+        return full.trim()
+          ? { ok: true, output: finish(full.trim()), aborted: true }
+          : { ok: false, output: 'Stopped.', aborted: true };
+      }
+
+      if (!full.trim()) {
+        // An empty stream means the token budget went entirely on reasoning.
+        // Fall through to the lighter model rather than showing a blank box.
         lastError = { text: 'The AI returned an empty response.', action: 'retry' };
         continue;
       }
-      const cleaned = type === 'fix_grammar'
-        ? stripMarkdown(raw)
-        : cleanTypography(stripMarkdown(raw));
-      return { ok: true, output: cleaned };
+      return { ok: true, output: finish(full.trim()) };
     }
 
+    const data = await response.json().catch(() => ({}));
     const rawMessage = data.error?.message || '';
     lastError = friendlyError(response.status, rawMessage);
 

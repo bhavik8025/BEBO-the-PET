@@ -8,6 +8,9 @@ const { readConfig } = require('./config');
 const CLIPBOARD_MAX = 8000;
 let lastOutput = '';
 
+// Streaming makes a Stop button possible: the panel can abort mid-answer.
+let activeTask = null;
+
 function sendClipboardSuggestion(panelWindow) {
   if (!panelWindow || panelWindow.isDestroyed()) return;
   if (readConfig().autoPaste === false) return;
@@ -167,6 +170,10 @@ function setupIPC({ petWindow, panelWindow }) {
     sendPetState(petWindow, 'idle');
   });
 
+  ipcMain.on('task:abort', () => {
+    if (activeTask) activeTask.abort();
+  });
+
   ipcMain.on('panel:close', () => {
     panelWindow.hide();
     sendPetState(petWindow, 'idle');
@@ -185,7 +192,23 @@ function setupIPC({ petWindow, panelWindow }) {
         : null;
       keepPetOnTop(petWindow);
 
-      const result = await runAITask({ type, input, screenshotBase64, regenerate });
+      // One in-flight task at a time; a new run cancels the previous one.
+      if (activeTask) activeTask.abort();
+      activeTask = new AbortController();
+
+      const result = await runAITask({
+        type,
+        input,
+        screenshotBase64,
+        regenerate,
+        signal: activeTask.signal,
+        onChunk: (text) => {
+          if (panelWindow && !panelWindow.isDestroyed()) {
+            panelWindow.webContents.send('task:chunk', { text });
+          }
+        }
+      });
+      activeTask = null;
       if (result.ok) lastOutput = result.output;
       sendPetState(petWindow, result.ok ? 'success' : 'confused', 1400);
       petWindow.webContents.send('pet:showBubble', {
@@ -196,9 +219,11 @@ function setupIPC({ petWindow, panelWindow }) {
         type,
         output: result.output,
         ok: result.ok,
-        action: result.action || null
+        action: result.action || null,
+        aborted: Boolean(result.aborted)
       });
     } catch (error) {
+      activeTask = null;
       sendPetState(petWindow, 'error', 1400);
       panelWindow.webContents.send('task:result', {
         type,

@@ -409,7 +409,8 @@ footer {
   align-items: center;
 }
 
-#regen-button {
+#regen-button,
+#stop-button {
   height: 24px;
   padding: 0 10px;
   border: 1px solid var(--border);
@@ -420,8 +421,18 @@ footer {
   cursor: pointer;
 }
 
-#regen-button:hover {
+#regen-button:hover,
+#stop-button:hover {
   border-color: var(--brand);
+}
+
+#stop-button {
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
+}
+
+#stop-button:hover {
+  border-color: #ef4444;
 }
 
 .error-action {

@@ -4,6 +4,8 @@ contextBridge.exposeInMainWorld('panelAPI', {
   close: () => ipcRenderer.send('panel:close'),
   runTask: (payload) => ipcRenderer.send('task:run', payload),
   onTaskResult: (callback) => ipcRenderer.on('task:result', (_, payload) => callback(payload)),
+  onTaskChunk: (callback) => ipcRenderer.on('task:chunk', (_, payload) => callback(payload)),
+  abortTask: () => ipcRenderer.send('task:abort'),
 
   getAppInfo: () => ipcRenderer.invoke('app:getInfo'),
   setTheme: (theme) => ipcRenderer.send('app:setTheme', theme),

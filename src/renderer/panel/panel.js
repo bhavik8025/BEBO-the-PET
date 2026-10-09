@@ -23,6 +23,7 @@ const autoPasteToggle = document.getElementById('autopaste-toggle');
 const clipHint = document.getElementById('clip-hint');
 const clipClear = document.getElementById('clip-clear');
 const regenButton = document.getElementById('regen-button');
+const stopButton = document.getElementById('stop-button');
 const errorAction = document.getElementById('error-action');
 const apiKeyInput = document.getElementById('apikey-input');
 const apiKeySave = document.getElementById('apikey-save');
@@ -30,7 +31,8 @@ const keyHint = document.getElementById('key-hint');
 const keyStatus = document.getElementById('key-status');
 const hotkeyButtons = Array.from(document.querySelectorAll('.hotkey-btn'));
 
-let lastRequest = null; // { type, input } — powers Regenerate
+let lastRequest = null;   // { type, input } — powers Regenerate
+let streaming = false;    // true once the first streamed chunk lands
 
 let appHotkeys = {};
 let defaultHotkeys = {};
@@ -44,14 +46,21 @@ closeButton.addEventListener('click', () => {
 
 function startTask(task, { regenerate = false } = {}) {
   lastRequest = { type: task, input: input.value };
+  streaming = false;
   clipHint.hidden = true;
   errorAction.hidden = true;
   regenButton.hidden = true;
+  stopButton.hidden = false;
   output.textContent = regenerate
     ? `Regenerating ${task.replaceAll('_', ' ')}...`
     : `Running ${task.replaceAll('_', ' ')}...`;
   window.panelAPI.runTask({ type: task, input: input.value, regenerate });
 }
+
+stopButton.addEventListener('click', () => {
+  stopButton.hidden = true;
+  window.panelAPI.abortTask();
+});
 
 document.querySelectorAll('[data-task]').forEach((button) => {
   button.addEventListener('click', () => startTask(button.dataset.task));
@@ -77,8 +86,23 @@ const ERROR_ACTIONS = {
   retry:  { label: 'Try again',          run: () => { if (lastRequest) startTask(lastRequest.type); } }
 };
 
+// Tokens arrive one at a time while the answer is still being written.
+window.panelAPI.onTaskChunk(({ text }) => {
+  if (!streaming) {
+    output.textContent = '';   // clear the "Running..." placeholder
+    streaming = true;
+  }
+  output.textContent += text;
+  output.scrollTop = output.scrollHeight;
+});
+
 window.panelAPI.onTaskResult(({ output: result, ok, action }) => {
+  // Replace the raw stream with the cleaned final text (markdown and em dashes
+  // can only be stripped safely once the whole answer has arrived).
+  streaming = false;
+  stopButton.hidden = true;
   output.textContent = result;
+  output.scrollTop = 0;
   regenButton.hidden = !(ok && lastRequest);
 
   const spec = action ? ERROR_ACTIONS[action] : null;
