@@ -20,6 +20,7 @@ const whatsnewList = document.getElementById('whatsnew-list');
 const whatsnewOk = document.getElementById('whatsnew-ok');
 const telemetryToggle = document.getElementById('telemetry-toggle');
 const autoPasteToggle = document.getElementById('autopaste-toggle');
+const paceSelect = document.getElementById('pace-select');
 const clipHint = document.getElementById('clip-hint');
 const clipHintText = document.getElementById('clip-hint-text');
 const clipClear = document.getElementById('clip-clear');
@@ -167,6 +168,10 @@ autoPasteToggle.addEventListener('change', () => {
   window.panelAPI.setAutoPaste(autoPasteToggle.checked);
 });
 
+paceSelect.addEventListener('change', () => {
+  window.panelAPI.setExpressionPace(paceSelect.value);
+});
+
 /* ── Change API key ────────────────────────────────────────────── */
 apiKeySave.addEventListener('click', async () => {
   const key = apiKeyInput.value.trim();
@@ -306,6 +311,7 @@ whatsnewOk.addEventListener('click', () => {
   defaultHotkeys = { ...info.defaults };
   telemetryToggle.checked = info.telemetry !== false;
   autoPasteToggle.checked = info.autoPaste !== false;
+  paceSelect.value = info.expressionPace || 'normal';
   keyHint.textContent = info.keyHint || '';
 
   if (info.whatsNew && info.whatsNew.show) {

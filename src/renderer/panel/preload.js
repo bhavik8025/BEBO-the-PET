@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld('panelAPI', {
   saveHotkeys: (hotkeys) => ipcRenderer.invoke('app:saveHotkeys', hotkeys),
   setTelemetry: (on) => ipcRenderer.invoke('app:setTelemetry', on),
   setAutoPaste: (on) => ipcRenderer.send('app:setAutoPaste', on),
+  setExpressionPace: (pace) => ipcRenderer.send('app:setExpressionPace', pace),
   changeApiKey: (key) => ipcRenderer.invoke('app:changeApiKey', key),
   onClipboardSuggestion: (cb) => ipcRenderer.on('panel:clipboardSuggestion', (_, p) => cb(p)),
   onSelectionCaptured: (cb) => ipcRenderer.on('panel:selectionCaptured', (_, p) => cb(p)),

@@ -1,3 +1,4 @@
+const petWrap = document.getElementById('pet-wrap');
 const petButton = document.getElementById('pet-button');
 const petCharacter = document.getElementById('pet-character');
 const speechBubble = document.getElementById('speech-bubble');
@@ -10,12 +11,27 @@ let didDrag = false;
 let dragOffsetX = 90;
 let dragOffsetY = 110;
 
+let returnTimer = null;
+
 function setState(state, durationMs) {
   currentState = state || 'idle';
+
+  if (returnTimer) {
+    window.clearTimeout(returnTimer);
+    returnTimer = null;
+  }
+
+  // Re-trigger even when the state is unchanged: one-shot animations would
+  // otherwise sit finished and never replay.
+  petCharacter.className = '';
+  void petCharacter.offsetWidth;          // force reflow
   petCharacter.className = `pet-${currentState}`;
 
+  // Drives the effect layer (z z z, sparkles, ?, sweat drop) in pet.css.
+  petWrap.dataset.fx = currentState;
+
   if (durationMs) {
-    window.setTimeout(() => setState('idle'), durationMs);
+    returnTimer = window.setTimeout(() => setState('idle'), durationMs);
   }
 }
 

@@ -9,6 +9,7 @@ const { hasGroqKey, saveGroqKey, getGroqKey, readConfig, writeConfig } = require
 const { GROQ_MODELS } = require('./ai-service');
 const { checkForUpdates } = require('./update-checker');
 const { sendDailyPing, isTelemetryEnabled, setTelemetryEnabled } = require('./telemetry');
+const { startAmbient, PACE } = require('./ambient');
 
 app.setAppUserModelId('com.bhavik.bebo-the-pet');
 
@@ -70,6 +71,9 @@ function launchBEBO() {
   // Anonymous daily install ping (opt-out in settings) — always fail-silent
   setTimeout(sendDailyPing, 7000);
   setInterval(sendDailyPing, 6 * 60 * 60 * 1000);
+
+  // BEBO's own idle life: occasional stretches, dozing off, waking up
+  startAmbient({ petWindow, panelWindow });
 }
 
 // ── App info / settings IPC (panel) ───────────────────────────────────────────
@@ -99,6 +103,9 @@ ipcMain.handle('app:getInfo', () => {
     modelLabel: prettyModelName(GROQ_MODELS[0]),
     telemetry: isTelemetryEnabled(),
     autoPaste: cfg.autoPaste !== false,
+    expressionPace: Object.prototype.hasOwnProperty.call(PACE, cfg.expressionPace)
+      ? cfg.expressionPace
+      : 'normal',
     // Only ever expose the last 4 characters, never the key itself
     keyHint: cfg.GROQ_API_KEY ? `…${String(cfg.GROQ_API_KEY).slice(-4)}` : '',
     theme: cfg.theme === 'light' ? 'light' : 'dark',
@@ -125,6 +132,12 @@ ipcMain.handle('app:saveHotkeys', (_, hotkeys) => updateHotkeys(hotkeys));
 ipcMain.handle('app:setTelemetry', (_, on) => setTelemetryEnabled(on));
 
 ipcMain.on('app:setAutoPaste', (_, on) => writeConfig({ autoPaste: Boolean(on) }));
+
+ipcMain.on('app:setExpressionPace', (_, pace) => {
+  if (Object.prototype.hasOwnProperty.call(PACE, pace)) {
+    writeConfig({ expressionPace: pace });
+  }
+});
 
 // Change the API key without reinstalling. Previously the key could only ever
 // be set on the first-run screen, so an expired or revoked key left the user

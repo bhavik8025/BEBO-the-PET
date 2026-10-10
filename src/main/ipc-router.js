@@ -1,6 +1,7 @@
 const { clipboard, desktopCapturer, ipcMain, Menu, screen } = require('electron');
 const { runAITask } = require('./ai-service');
-const { readConfig } = require('./config');
+const { readConfig, writeConfig } = require('./config');
+const { setBusy, celebrateIfMilestone } = require('./ambient');
 
 // Auto-paste: when the panel opens with an empty input, offer whatever text is
 // already on the clipboard. Capped so a giant copy does not fill the box, and
@@ -222,6 +223,7 @@ function setupIPC({ petWindow, panelWindow }) {
   });
 
   ipcMain.on('task:run', async (_, { type, input, regenerate }) => {
+    setBusy(true);                 // keep ambient expressions out of the way
     sendPetState(petWindow, 'thinking');
     petWindow.webContents.send('pet:showBubble', {
       text: type === 'explain_screen' ? 'Looking...' : 'Working...',
@@ -251,12 +253,24 @@ function setupIPC({ petWindow, panelWindow }) {
         }
       });
       activeTask = null;
+      setBusy(false);
       if (result.ok) lastOutput = result.output;
-      sendPetState(petWindow, result.ok ? 'success' : 'confused', 1400);
-      petWindow.webContents.send('pet:showBubble', {
-        text: result.ok ? 'Done.' : 'Hmm.',
-        autoHideMs: 3000
-      });
+
+      // Every tenth completed task earns a little celebration.
+      let celebrated = false;
+      if (result.ok) {
+        const count = (readConfig().taskCount || 0) + 1;
+        writeConfig({ taskCount: count });
+        celebrated = celebrateIfMilestone(petWindow, count);
+      }
+
+      if (!celebrated) {
+        sendPetState(petWindow, result.ok ? 'success' : 'confused', 1400);
+        petWindow.webContents.send('pet:showBubble', {
+          text: result.ok ? 'Done.' : 'Hmm.',
+          autoHideMs: 3000
+        });
+      }
       panelWindow.webContents.send('task:result', {
         type,
         output: result.output,
@@ -266,6 +280,7 @@ function setupIPC({ petWindow, panelWindow }) {
       });
     } catch (error) {
       activeTask = null;
+      setBusy(false);
       sendPetState(petWindow, 'error', 1400);
       panelWindow.webContents.send('task:result', {
         type,

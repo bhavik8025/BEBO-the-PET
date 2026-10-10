@@ -487,6 +487,17 @@ footer {
   font-weight: 400;
 }
 
+.telemetry-row select {
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
 .whatsnew-list {
   margin: 0;
   padding-left: 18px;
