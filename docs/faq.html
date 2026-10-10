@@ -28,6 +28,9 @@
       {"@type": "Question", "name": "What keyboard shortcuts does BEBO have?", "acceptedAnswer": {"@type": "Answer", "text": "Three global shortcuts that work inside any app: Ctrl+Shift+W wakes BEBO, Ctrl+Shift+B hides BEBO, and Ctrl+Shift+P shows or hides the assistant panel. Since BEBO 2.0 all three can be remapped from the settings inside the panel."}},
       {"@type": "Question", "name": "What is new in BEBO 2.0?", "acceptedAnswer": {"@type": "Answer", "text": "BEBO 2.0 brings a new AI brain (GPT-OSS 120B with an automatic GPT-OSS 20B backup), a color for every action button, a dark/light theme toggle, remappable keyboard shortcuts, voice input via Windows dictation (Win+H), multi-monitor support, and built-in update alerts."}},
       {"@type": "Question", "name": "Can I dictate text to BEBO instead of typing?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Click into BEBO's Input box, press Win+H, and speak — Windows' built-in voice typing writes your words straight into the box. No extra setup, no extra cost."}},
+      {"@type": "Question", "name": "Why does BEBO move on its own?", "acceptedAnswer": {"@type": "Answer", "text": "BEBO is a desktop pet, so it occasionally blinks, sways, glances around or stretches by itself. It stretches more in the morning, yawns after 11pm, falls asleep after 10 minutes away from your keyboard and wakes when you return. It never moves while an AI action is running or while the assistant panel is open."}},
+      {"@type": "Question", "name": "How do I stop BEBO from moving or make it calmer?", "acceptedAnswer": {"@type": "Answer", "text": "Open the panel, click the gear icon and change BEBO's liveliness. Lively moves every 1 to 2.5 minutes, Normal every 2.5 to 6.5 minutes, Calm every 7 to 15 minutes, and Off means BEBO never moves on its own. BEBO also follows the Windows reduce motion accessibility setting automatically."}},
+      {"@type": "Question", "name": "How do I use text from another app in BEBO?", "acceptedAnswer": {"@type": "Answer", "text": "Select the text in any Windows application and press Ctrl+Shift+E. BEBO opens with that text already in the input box, so you never have to copy and paste. Your clipboard is left exactly as it was. This does not work in apps running as Administrator, which Windows blocks for security."}},
       {"@type": "Question", "name": "Is BEBO open source?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The full source code is public on GitHub at github.com/bhavik8025/BEBO-the-PET under the MIT license. You can read the code, report issues, or contribute."}},
       {"@type": "Question", "name": "Why does Windows SmartScreen show a warning when I install BEBO?", "acceptedAnswer": {"@type": "Answer", "text": "Code-signing certificates cost hundreds of dollars per year, which an independent free app does not pay for. The warning only means the publisher is not registered with Microsoft. Click More info and then Run anyway. The source code is fully public on GitHub so you can verify exactly what BEBO does."}},
       {"@type": "Question", "name": "Does BEBO work offline?", "acceptedAnswer": {"@type": "Answer", "text": "The pet itself runs offline, but the AI functions need an internet connection because the language model runs on Groq's cloud servers."}},
@@ -159,6 +162,28 @@
   <details>
     <summary>What keyboard shortcuts does BEBO have?</summary>
     <div class="answer">Three global shortcuts that work inside any app: <code>Ctrl+Shift+W</code> wakes BEBO, <code>Ctrl+Shift+B</code> hides BEBO, and <code>Ctrl+Shift+P</code> shows or hides the assistant panel. Since <strong>BEBO 2.0</strong>, all three can be remapped from the ⚙ settings inside the panel.</div>
+  </details>
+
+  <details>
+    <summary>Why does BEBO move on its own?</summary>
+    <div class="answer">Because it's a pet, not an icon. BEBO blinks, sways, glances around and stretches by itself. It <strong>stretches more in the morning</strong>, <strong>yawns after 11pm</strong>, <strong>falls asleep</strong> after 10 minutes away from your keyboard (complete with floating z's) and stretches awake when you come back. Every tenth completed task gets a little celebration. It <strong>never</strong> moves while an AI action is running or while the panel is open.</div>
+  </details>
+
+  <details>
+    <summary>How do I make BEBO calmer, or stop it moving entirely?</summary>
+    <div class="answer">Open the panel, click the <strong>⚙ gear icon</strong>, and set <strong>BEBO's liveliness</strong>:
+      <br><br>
+      <strong>Lively</strong> — moves every 1 to 2.5 minutes<br>
+      <strong>Normal</strong> — every 2.5 to 6.5 minutes (the default)<br>
+      <strong>Calm</strong> — every 7 to 15 minutes<br>
+      <strong>Off</strong> — never moves on its own
+      <br><br>
+      Most movements are a near-invisible blink or sway; big ones like a dance happen only a few times a day. BEBO also respects the Windows <em>reduce motion</em> accessibility setting automatically.</div>
+  </details>
+
+  <details>
+    <summary>How do I use text from another app?</summary>
+    <div class="answer">Select it anywhere in Windows and press <code>Ctrl+Shift+E</code>. BEBO opens with that text already in the input box — no copying or pasting. Your clipboard is left exactly as you had it. (This won't work in apps running as Administrator, which Windows blocks for security.)</div>
   </details>
 
   <details>
