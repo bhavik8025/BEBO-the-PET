@@ -171,35 +171,29 @@
       font-size: 12.5px; color: var(--muted); letter-spacing: .02em;
       display: flex; align-items: center; gap: 7px;
     }
+    a.trust-item { color: var(--muted); text-decoration: none; }
+    a.trust-item:hover { color: var(--text); }
+    a.trust-item strong { color: var(--lpur); font-weight: 700; }
     .trust-item::before {
       content: ''; width: 5px; height: 5px; border-radius: 50%;
       background: var(--green); flex-shrink: 0;
     }
 
     /* ── Hero demo ──────────────────────────────────────────────────────
-       The animation is composited on a solid colour (an alpha channel tripled
-       the file size), so it is framed as a small desktop window. That turns the
-       rectangle into a deliberate device frame and reinforces the pitch: this
-       thing lives on your desktop. */
-    .hero-demo { margin: 0; position: relative; z-index: 1; text-align: center; }
-    .device-frame {
-      display: inline-block; padding: 26px 0 0; border-radius: 13px;
-      background: #101220; border: 1px solid rgba(124,92,252,0.34);
-      box-shadow: 0 22px 60px rgba(0,0,0,0.55), 0 0 44px rgba(124,92,252,0.18);
-      position: relative; overflow: hidden;
-    }
-    .device-frame::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 26px;
-      background: #171a2b; border-bottom: 1px solid rgba(124,92,252,0.22);
-    }
-    .device-frame::after {
-      content: ''; position: absolute; top: 10px; left: 12px;
-      width: 6px; height: 6px; border-radius: 50%; background: #ef4444;
-      box-shadow: 11px 0 0 #fbbf24, 22px 0 0 #10b981;
-    }
-    .device-frame img { display: block; border-radius: 0 0 12px 12px; }
+       The reel is composited on black rather than carrying an alpha channel:
+       alpha tripled the file (497KB even at a choppy 3.5fps, because BEBO's
+       glow is mostly semi-transparent pixels that compress badly). With
+       mix-blend-mode:screen the black contributes nothing on a dark page, so
+       the box disappears and the glow blends additively. Same look as
+       transparency, 189KB, full 7fps. */
+    .hero-demo { margin: 0; text-align: center; }
+    /* Applies wherever the reel appears, not just the hero. The black it is
+       composited on contributes nothing under screen blending, so the frame
+       disappears into whatever dark background sits behind it. */
+    .hero-demo img,
+    .reel { display: block; mix-blend-mode: screen; }
     .hero-demo figcaption {
-      margin-top: 11px; font-size: 11.5px; color: var(--muted);
+      margin-top: 4px; font-size: 11.5px; color: var(--muted);
       letter-spacing: .04em; text-transform: uppercase;
     }
 
@@ -236,6 +230,7 @@
       border: 1px solid rgba(124,92,252,0.3);
       box-shadow: 0 20px 48px rgba(0,0,0,0.45);
     }
+    .showcase-media img.reel { border: 0; box-shadow: none; border-radius: 0; }
     .showcase-copy { flex: 1; min-width: 0; }
     @media (max-width: 860px) {
       .showcase, .showcase.flip { flex-direction: column; gap: 26px; }
@@ -301,7 +296,7 @@
     }
     .hero-inner {
       display: flex; align-items: center; gap: 48px;
-      position: relative; z-index: 1;
+      position: relative;   /* no z-index: it would isolate the hero blend */
     }
     .hero-left { flex: 1; min-width: 0; }
     .hero-right {
@@ -624,14 +619,12 @@
         <!-- The whole point of BEBO is that it moves, so the hero shows it
              moving: real frames captured from the running app. -->
         <figure class="hero-demo">
-          <div class="device-frame">
-            <picture>
-              <source srcset="bebo-expressions.webp" type="image/webp" />
-              <img src="bebo-expressions-still.png"
-                   alt="BEBO the PET animated desktop robot stretching, dancing, waving and falling asleep on a Windows desktop"
-                   width="222" height="249" />
-            </picture>
-          </div>
+          <picture>
+            <source srcset="bebo-expressions.webp" type="image/webp" />
+            <img src="bebo-expressions-still.png"
+                 alt="BEBO the PET animated desktop robot stretching, dancing, waving and falling asleep on a Windows desktop"
+                 width="222" height="249" />
+          </picture>
           <figcaption>Real capture, not a mockup</figcaption>
         </figure>
       </div>
@@ -639,13 +632,8 @@
 
     <!-- Trust strip -->
     <div class="trust-strip">
-      <a href="https://github.com/bhavik8025/BEBO-the-PET/releases/latest" target="_blank" rel="noopener">
-        <img src="https://img.shields.io/github/downloads/bhavik8025/BEBO-the-PET/total?style=flat-square&color=7c5cfc&label=downloads"
-             alt="Total downloads from GitHub" height="20" loading="lazy" />
-      </a>
-      <a href="https://github.com/bhavik8025/BEBO-the-PET" target="_blank" rel="noopener">
-        <img src="https://img.shields.io/github/stars/bhavik8025/BEBO-the-PET?style=flat-square&color=22d3ee&label=stars"
-             alt="GitHub stars" height="20" loading="lazy" />
+      <a class="trust-item trust-strong" href="https://github.com/bhavik8025/BEBO-the-PET/releases/latest" target="_blank" rel="noopener">
+        <strong id="dl-total-mini">201+</strong>&nbsp;downloads
       </a>
       <span class="trust-item">MIT licensed</span>
       <span class="trust-item">Windows 10 &amp; 11</span>
@@ -923,7 +911,7 @@
       <div class="showcase-media">
         <picture>
           <source srcset="bebo-expressions.webp" type="image/webp" />
-          <img src="bebo-expressions-still.png" width="222" height="249"
+          <img src="bebo-expressions-still.png" width="222" height="249" class="reel"
                alt="BEBO the PET cycling through its expressions: stretching, dancing, waving and sleeping" />
         </picture>
       </div>
@@ -1257,7 +1245,12 @@
           return a + (asset.download_count || 0);
         }, 0);
       }, 0);
-      if (live > 0) el.textContent = (live + ARCHIVED_V1).toLocaleString();
+      if (live > 0) {
+        var total = (live + ARCHIVED_V1).toLocaleString();
+        el.textContent = total;
+        var mini = document.getElementById('dl-total-mini');
+        if (mini) mini.textContent = total;      // keep both figures identical
+      }
     })
     .catch(function () { /* keep the fallback number */ });
 })();
