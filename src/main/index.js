@@ -78,16 +78,16 @@ function launchBEBO() {
 
 // ── App info / settings IPC (panel) ───────────────────────────────────────────
 const WHATS_NEW_ITEMS = [
-  'New: anonymous install counter — one daily ping with app version + random id, never your text. Opt out anytime via the gear icon',
-  'New AI brain: GPT-OSS 120B via Groq — the old Llama model retires on Aug 16, 2026',
-  'Automatic backup model (GPT-OSS 20B) if the primary is busy',
-  'Every action button now has its own color',
-  'Dark / Light theme toggle — sun icon in the header',
-  'Remap all keyboard shortcuts from the gear icon',
-  'Hide BEBO moved to Ctrl+Shift+B — so Win+H stays free for voice typing',
-  'Voice input: click the Input box, press Win+H, and speak',
-  'BEBO now wakes on the monitor you are working on',
-  'BEBO alerts you here when a new version is released'
+  'Grab selected text from any app: select it anywhere, press Ctrl+Shift+E, and BEBO opens with it loaded',
+  'Answers now stream in as they are written, with a Stop button',
+  'Regenerate re-runs the last action for a genuinely different take',
+  'BEBO blinks its eyes about every 10 seconds, so it always looks awake',
+  'BEBO now has a life of its own: it stretches, looks around, dozes off when you step away and wakes when you return',
+  'Set how lively BEBO is from the gear icon: Lively, Normal, Calm or Off',
+  'Change your Groq API key from settings, verified before it saves',
+  'Clearer errors with a button that fixes the problem instead of a raw code',
+  'The panel can auto-fill from your clipboard when it opens',
+  'Rewritten AI prompts: measurably better summaries and far more natural Humanize output'
 ];
 
 function prettyModelName(modelId) {

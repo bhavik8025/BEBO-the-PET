@@ -6,6 +6,8 @@
   <title>FAQ — BEBO the PET, Free AI Assistant for Windows</title>
   <meta name="description" content="Answers about BEBO the PET, the free AI desktop assistant for Windows: cost, privacy, setup, shortcuts, the animated pet, and the SmartScreen warning." />
   <link rel="canonical" href="https://bhavik8025.github.io/BEBO-the-PET/faq.html" />
+  <!-- Sitemap discoverable from the page itself, not just robots.txt -->
+  <link rel="sitemap" type="application/xml" title="Sitemap" href="https://bhavik8025.github.io/BEBO-the-PET/sitemap.xml" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="FAQ — BEBO the PET" />
   <meta property="og:description" content="Everything you want to know about BEBO the PET, the free AI desktop assistant for Windows." />
@@ -32,8 +34,8 @@
       {"@type": "Question", "name": "What keyboard shortcuts does BEBO have?", "acceptedAnswer": {"@type": "Answer", "text": "Three global shortcuts that work inside any app: Ctrl+Shift+W wakes BEBO, Ctrl+Shift+B hides BEBO, and Ctrl+Shift+P shows or hides the assistant panel. Since BEBO 2.0 all three can be remapped from the settings inside the panel."}},
       {"@type": "Question", "name": "What is new in BEBO 2.0?", "acceptedAnswer": {"@type": "Answer", "text": "BEBO 2.0 brings a new AI brain (GPT-OSS 120B with an automatic GPT-OSS 20B backup), a color for every action button, a dark/light theme toggle, remappable keyboard shortcuts, voice input via Windows dictation (Win+H), multi-monitor support, and built-in update alerts."}},
       {"@type": "Question", "name": "Can I dictate text to BEBO instead of typing?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Click into BEBO's Input box, press Win+H, and speak — Windows' built-in voice typing writes your words straight into the box. No extra setup, no extra cost."}},
-      {"@type": "Question", "name": "Why does BEBO move on its own?", "acceptedAnswer": {"@type": "Answer", "text": "BEBO is a desktop pet, so it occasionally blinks, sways, glances around or stretches by itself. It stretches more in the morning, yawns after 11pm, falls asleep after 10 minutes away from your keyboard and wakes when you return. It never moves while an AI action is running or while the assistant panel is open."}},
-      {"@type": "Question", "name": "How do I stop BEBO from moving or make it calmer?", "acceptedAnswer": {"@type": "Answer", "text": "Open the panel, click the gear icon and change BEBO's liveliness. Lively moves every 1 to 2.5 minutes, Normal every 2.5 to 6.5 minutes, Calm every 7 to 15 minutes, and Off means BEBO never moves on its own. BEBO also follows the Windows reduce motion accessibility setting automatically."}},
+      {"@type": "Question", "name": "Why does BEBO move on its own?", "acceptedAnswer": {"@type": "Answer", "text": "BEBO is a desktop pet. Its eyes blink roughly every 10 seconds, and it also sways, glances around or stretches by itself. It stretches more in the morning, yawns after 11pm, falls asleep after 10 minutes away from your keyboard and wakes when you return. It never moves while an AI action is running or while the assistant panel is open."}},
+      {"@type": "Question", "name": "How do I stop BEBO from moving or make it calmer?", "acceptedAnswer": {"@type": "Answer", "text": "Open the panel, click the gear icon and change BEBO's liveliness. Lively moves every 1 to 2.5 minutes, Normal every 2.5 to 6.5 minutes, Calm every 7 to 15 minutes, and Off means BEBO never moves on its own. Those gaps control the larger movements; blinking is separate and happens about every 10 seconds on every setting except Off. BEBO also follows the Windows reduce motion accessibility setting automatically."}},
       {"@type": "Question", "name": "How do I use text from another app in BEBO?", "acceptedAnswer": {"@type": "Answer", "text": "Select the text in any Windows application and press Ctrl+Shift+E. BEBO opens with that text already in the input box, so you never have to copy and paste. Your clipboard is left exactly as it was. This does not work in apps running as Administrator, which Windows blocks for security."}},
       {"@type": "Question", "name": "Is BEBO open source?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The full source code is public on GitHub at github.com/bhavik8025/BEBO-the-PET under the MIT license. You can read the code, report issues, or contribute."}},
       {"@type": "Question", "name": "Why does Windows SmartScreen show a warning when I install BEBO?", "acceptedAnswer": {"@type": "Answer", "text": "Code-signing certificates cost hundreds of dollars per year, which an independent free app does not pay for. The warning only means the publisher is not registered with Microsoft. Click More info and then Run anyway. The source code is fully public on GitHub so you can verify exactly what BEBO does."}},
@@ -170,7 +172,7 @@
 
   <details>
     <summary>Why does BEBO move on its own?</summary>
-    <div class="answer">Because it's a pet, not an icon. BEBO blinks, sways, glances around and stretches by itself. It <strong>stretches more in the morning</strong>, <strong>yawns after 11pm</strong>, <strong>falls asleep</strong> after 10 minutes away from your keyboard (complete with floating z's) and stretches awake when you come back. Every tenth completed task gets a little celebration. It <strong>never</strong> moves while an AI action is running or while the panel is open.</div>
+    <div class="answer">Because it's a pet, not an icon. <strong>Its eyes blink about every 10 seconds</strong> &mdash; a real eyelid blink, on its own clock &mdash; and it also sways, glances around and stretches by itself. It <strong>stretches more in the morning</strong>, <strong>yawns after 11pm</strong>, <strong>falls asleep</strong> after 10 minutes away from your keyboard (complete with floating z's) and stretches awake when you come back. Every tenth completed task gets a little celebration. It <strong>never</strong> moves while an AI action is running or while the panel is open.</div>
   </details>
 
   <details>
@@ -182,7 +184,7 @@
       <strong>Calm</strong> — every 7 to 15 minutes<br>
       <strong>Off</strong> — never moves on its own
       <br><br>
-      Most movements are a near-invisible blink or sway; big ones like a dance happen only a few times a day. BEBO also respects the Windows <em>reduce motion</em> accessibility setting automatically.</div>
+      Those gaps cover the bigger movements &mdash; a sway, a stretch, a dance. Blinking is separate: BEBO blinks its eyes about every 10 seconds on every setting except Off, which is what keeps it looking awake rather than frozen. BEBO also respects the Windows <em>reduce motion</em> accessibility setting automatically.</div>
   </details>
 
   <details>

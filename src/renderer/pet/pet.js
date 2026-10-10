@@ -1,6 +1,8 @@
 const petWrap = document.getElementById('pet-wrap');
 const petButton = document.getElementById('pet-button');
-const petCharacter = document.getElementById('pet-character');
+// Expressions are applied to the wrapper, not the <img>, so the eyelids drawn
+// over the avatar move with it.
+const petBody = document.getElementById('pet-body');
 const speechBubble = document.getElementById('speech-bubble');
 
 let currentState = 'idle';
@@ -23,9 +25,9 @@ function setState(state, durationMs) {
 
   // Re-trigger even when the state is unchanged: one-shot animations would
   // otherwise sit finished and never replay.
-  petCharacter.className = '';
-  void petCharacter.offsetWidth;          // force reflow
-  petCharacter.className = `pet-${currentState}`;
+  petBody.className = '';
+  void petBody.offsetWidth;               // force reflow
+  petBody.className = `pet-${currentState}`;
 
   // Drives the effect layer (z z z, sparkles, ?, sweat drop) in pet.css.
   petWrap.dataset.fx = currentState;

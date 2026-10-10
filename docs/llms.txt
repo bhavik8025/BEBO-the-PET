@@ -59,10 +59,11 @@ which takes about 30 seconds to create and requires no credit card.
 **Does it work offline?** The pet runs offline, but the AI actions need an
 internet connection because the model runs on Groq's servers.
 
-**Why does the pet move on its own?** BEBO is a desktop pet. It blinks, sways,
-stretches, yawns at night and sleeps after ten minutes of inactivity. How often
-it moves is configurable (Lively, Normal, Calm, or Off), and it never moves
-while an AI action is running.
+**Why does the pet move on its own?** BEBO is a desktop pet. Its eyes blink
+about every 10 seconds, and it also sways, stretches, yawns at night and sleeps
+after ten minutes of inactivity. How often the larger movements happen is
+configurable (Lively, Normal, Calm, or Off); blinking runs on its own 10-second
+clock on every setting except Off. It never moves while an AI action is running.
 
 **Why does Windows show a SmartScreen warning?** BEBO is not code-signed,
 because certificates cost hundreds of dollars a year. The warning means the

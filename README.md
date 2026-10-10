@@ -22,6 +22,9 @@ Built entirely with **Electron + Node.js**, BEBO runs natively on Windows with z
 ## Features
 
 ### 🐾 Animated Desktop Pet
+- **Blinks its eyes about every 10 seconds** — a real eyelid blink, on its own clock, so BEBO always looks awake
+- **Lives on its own** — sways, glances around, stretches in the morning, yawns at night, and sleeps after 10 minutes away from your keyboard
+- Liveliness is adjustable: **Lively / Normal / Calm / Off** (blinking continues on every setting except Off)
 - Lives permanently on your Windows desktop — always on top, always visible
 - Smooth CSS animations — idle float, happy bounce, thinking pulse, excited wiggle, and more
 - Fully **draggable** — reposition BEBO anywhere on screen by dragging
@@ -36,6 +39,8 @@ Built entirely with **Electron + Node.js**, BEBO runs natively on Windows with z
 - Editable output — modify AI results directly in the output box
 - One-click Copy button on all results
 - Powered by **GPT-OSS 120B** on Groq — blazing fast inference
+- **Answers stream in** as they are written, with a Stop button
+- **Regenerate** any result for a different take
 
 ### ⚡ 6 AI Functions
 
@@ -55,6 +60,10 @@ Built entirely with **Electron + Node.js**, BEBO runs natively on Windows with z
 | `Ctrl + Shift + P` | Toggle the assistant panel open/closed |
 | `Ctrl + Shift + W` | Wake BEBO — shows a happy animation |
 | `Ctrl + Shift + B` | Show/hide the pet |
+| `Ctrl + Shift + E` | **Grab the text selected in any app** and open BEBO with it |
+| `Win + H` | Dictate into the input box using Windows voice typing |
+
+All four global shortcuts can be remapped from the panel's ⚙ settings.
 
 ### 🖥️ System Tray
 - BEBO lives in the system tray when running in the background
@@ -257,7 +266,7 @@ BEBO was built as a solo project by **Bhavik Thakkar**, a student at Lal Bahadur
 - [x] Multi-monitor support — BEBO wakes on your active monitor (v2.0)
 - [ ] Plugin system — add your own custom AI functions
 - [ ] macOS port
-- [ ] Auto-start on Windows login
+- [x] Auto-start on Windows login
 - [x] Dark/Light theme toggle for panel (v2.0)
 - [x] Custom hotkey remapping — change any shortcut from the panel settings (v2.0)
 - [x] In-app update alerts when a new version is released (v2.0)

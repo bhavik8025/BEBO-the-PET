@@ -10,13 +10,21 @@
     <main id="pet-wrap" aria-label="Desktop AI Pet">
       <div id="speech-bubble" role="status"></div>
       <button id="pet-button" aria-label="Open pet assistant">
-        <img
-          id="pet-character"
-          class="pet-idle"
-          src="../../../assets/icon.png"
-          alt="BEBO"
-          draggable="false"
-        />
+        <!-- #pet-body is what every expression animates. The avatar and the
+             eyelids live inside it together, so lids stay locked to the eyes
+             through a sway, a jump or the idle float. -->
+        <div id="pet-body" class="pet-idle">
+          <img
+            id="pet-character"
+            src="../../../assets/icon.png"
+            alt="BEBO"
+            draggable="false"
+          />
+          <!-- Eyelids, sized and placed from the artwork's own eye positions.
+               They sit on top of the avatar; the avatar itself is untouched. -->
+          <span class="pet-eye pet-eye-left" aria-hidden="true"></span>
+          <span class="pet-eye pet-eye-right" aria-hidden="true"></span>
+        </div>
       </button>
       <span id="status-dot" hidden></span>
 

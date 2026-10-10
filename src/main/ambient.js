@@ -25,12 +25,25 @@ const PACE = {
   lively: { min: 55000,  max: 150000 }    //   1-2.5 min
 };
 
+// Blinking is the one expression that has to feel constant rather than
+// occasional. On the weighted schedule below it landed roughly once every
+// 10 minutes, which reads as a sprite that happened to twitch — not a
+// creature. So it runs on its own fast timer, independent of the pace gaps.
+// Kept at ~10s on every pace (except Off): it is the subtlest motion BEBO has,
+// so it never competes with the bigger expressions for attention.
+const BLINK_EVERY = { min: 8600, max: 11400 };   // ~10s, jittered either side
+const BLINK_MS = 1060;                           // botEyelid runs 1s; +60ms so
+                                                 // the lift is not cut short
+
 // Weighted so most activity is almost subliminal and the big stuff is a treat.
 // `ms` must exceed the CSS animation length or the pet snaps back to idle
 // mid-movement: sway runs 7.2s and dance 4.2s, so a flat cutoff truncated them.
+// `rest` is a deliberate no-op holding the slot blink used to occupy, so moving
+// blink to its own timer did not silently make every other expression ~1.5x
+// more frequent.
 const REPERTOIRE = [
-  { state: 'blink',      weight: 34, ms: 450 },
-  { state: 'sway',       weight: 22, ms: 7400 },   // botSway 3.6s x2
+  { state: null,         weight: 34, ms: 0 },     // rest — BEBO just sits there
+  { state: 'sway',       weight: 22, ms: 7400 },  // botSway 3.6s x2
   { state: 'lookAround', weight: 16, ms: 3000 },   // botLook 2.8s
   { state: 'stretch',    weight: 11, ms: 1700 },   // botStretch 1.5s
   { state: 'wave',       weight: 7,  ms: 1450 },   // botWave 1.25s
@@ -42,9 +55,15 @@ const REPERTOIRE = [
 const SLEEP_AFTER_SEC = 10 * 60;   // system idle before BEBO dozes off
 const IDLE_POLL_MS = 15000;
 
-let timers = [];
+// Each self-rescheduling chain keeps a single handle rather than being pushed
+// onto a growing list. BEBO auto-starts with Windows and runs for weeks without
+// a restart, so with blinking every 10s an append-only list of timer handles
+// would retain tens of thousands of dead Timeout objects.
+let blinkTimer = null;
+let paceTimer = null;
 let asleep = false;
 let busy = false;                  // an AI task is running
+let expressionUntil = 0;           // ms timestamp; a motion is still playing
 
 function pickExpression(hour) {
   // Time of day nudges the mood: a stretch in the morning, a yawn late at night.
@@ -74,8 +93,9 @@ function currentPace() {
 }
 
 function clearTimers() {
-  timers.forEach((t) => clearTimeout(t));
-  timers = [];
+  clearTimeout(blinkTimer);
+  clearTimeout(paceTimer);
+  blinkTimer = paceTimer = null;
 }
 
 function startAmbient({ petWindow, panelWindow }) {
@@ -83,27 +103,49 @@ function startAmbient({ petWindow, panelWindow }) {
 
   const play = (state, durationMs) => {
     if (!alive()) return;
+    // Remember when this motion ends so the 10s blink never cuts a sway or a
+    // dance in half. `sleeping` has no duration and holds until woken, which
+    // the `asleep` flag already guards.
+    expressionUntil = durationMs ? Date.now() + durationMs : 0;
     petWindow.webContents.send('pet:setState', { state, durationMs });
+  };
+
+  // Shared gate: BEBO stays still while the user is actually working with it.
+  const canMove = () => {
+    const panelInUse = panelWindow && !panelWindow.isDestroyed() && panelWindow.isVisible();
+    const hidden = !alive() || !petWindow.isVisible();
+    return !busy && !asleep && !panelInUse && !hidden;
+  };
+
+  // ── Blinking, on its own clock ───────────────────────────────────────────
+  const scheduleBlink = () => {
+    const gap = BLINK_EVERY.min + Math.random() * (BLINK_EVERY.max - BLINK_EVERY.min);
+    blinkTimer = setTimeout(() => {
+      // Skip rather than queue: a blink owed from 9s ago is not worth playing,
+      // and overriding a longer motion mid-animation looks like a glitch.
+      if (currentPace() && canMove() && Date.now() >= expressionUntil) {
+        play('blink', BLINK_MS);
+      }
+      scheduleBlink();
+    }, gap);
   };
 
   // ── Unprompted expressions ──────────────────────────────────────────────
   const scheduleNext = () => {
     const pace = currentPace();
-    if (!pace) {                                   // switched off
-      timers.push(setTimeout(scheduleNext, 60000));  // re-check if re-enabled
+    if (!pace) {                                 // switched off
+      paceTimer = setTimeout(scheduleNext, 60000);  // re-check if re-enabled
       return;
     }
     const gap = pace.min + Math.random() * (pace.max - pace.min);
-    timers.push(setTimeout(() => {
-      const panelInUse = panelWindow && !panelWindow.isDestroyed() && panelWindow.isVisible();
-      const hidden = !alive() || !petWindow.isVisible();
-      // Stay out of the way while the user is actually working with BEBO.
-      if (!busy && !asleep && !panelInUse && !hidden) {
+    paceTimer = setTimeout(() => {
+      if (canMove()) {
         const pick = pickExpression(new Date().getHours());
-        play(pick.state, pick.ms);     // per-expression, so nothing is truncated
+        // pick.state is null on a `rest` slot — BEBO deliberately does nothing.
+        if (pick.state) play(pick.state, pick.ms);   // per-expression, so nothing truncates
       }
       scheduleNext();
-    }, gap));
+    }, gap);
   };
 
   // ── Dozing off and waking up ────────────────────────────────────────────
@@ -129,6 +171,7 @@ function startAmbient({ petWindow, panelWindow }) {
 
   clearTimers();
   scheduleNext();
+  scheduleBlink();
   const idleTimer = setInterval(checkIdle, IDLE_POLL_MS);
   if (alive()) petWindow.on('closed', () => { clearInterval(idleTimer); clearTimers(); });
 }
@@ -143,6 +186,7 @@ function setBusy(value) {
 function celebrateIfMilestone(petWindow, count) {
   if (!count || count % 10 !== 0) return false;
   if (!petWindow || petWindow.isDestroyed()) return false;
+  expressionUntil = Date.now() + 1500;    // keep the blink timer off the celebration
   petWindow.webContents.send('pet:setState', { state: 'celebrate', durationMs: 1500 });
   petWindow.webContents.send('pet:showBubble', {
     text: `${count} tasks!`,

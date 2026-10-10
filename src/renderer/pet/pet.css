@@ -42,16 +42,75 @@ body {
   cursor: grabbing;
 }
 
+/* Expressions animate this wrapper rather than the image itself, so the
+   eyelids below travel with the avatar instead of sliding off it mid-sway. */
+#pet-body {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  transform-origin: 50% 92%;   /* pivot at the feet, so leans look planted */
+  will-change: transform;
+}
+
 /* The avatar image itself is never altered — every expression is motion
-   applied to this element, plus the separate effect layer below. */
+   applied to the wrapper, plus the eyelids and effect layer drawn over it. */
 #pet-character {
+  display: block;
   width: 80px;
   height: 80px;
   object-fit: contain;
-  transform-origin: 50% 92%;   /* pivot at the feet, so leans look planted */
   pointer-events: none;
   filter: drop-shadow(0 6px 14px rgba(80, 180, 255, 0.45));
-  will-change: transform;
+}
+
+/* ── Eyelids ───────────────────────────────────────────────────────
+   BEBO's eyes are two glowing rings painted into the artwork, so a blink has
+   to be a lid drawn over each one. Positions are percentages measured off the
+   512px avatar: the eye centres sit at (203,178) and (304,178) and each eye is
+   roughly 68px across, so a 76x72 socket covers the glow with a little margin.
+   Percentages rather than pixels keep them aligned at any render size. */
+.pet-eye {
+  position: absolute;
+  top: 27.73%;
+  width: 14.84%;
+  height: 14.06%;
+  overflow: hidden;            /* clips the lid to the socket */
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.pet-eye-left  { left: 32.23%; }
+.pet-eye-right { left: 51.95%; }
+
+/* The lid. Colours are sampled from the visor directly above each eye — near
+   black shading to dark navy — so a shut eye reads as socket rather than as a
+   patch sitting on the face. */
+.pet-eye::before {
+  content: "";
+  position: absolute;
+  inset: -8% -2% 0;
+  background: linear-gradient(180deg, #041226 0%, #0a2342 62%, #12305c 100%);
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+}
+
+/* The closed-eye arc. A straight bar read as an LED dash and a downward curve
+   read as sulking; an upward curve is the universal shut-and-happy eye, and it
+   echoes the smile already in the artwork. Drawn as the top edge of an
+   ellipse, so it is one border rather than an image. */
+.pet-eye::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 30%;
+  height: 52%;
+  border-top: 1.3px solid #c4f2ff;
+  border-radius: 50%;
+  /* drop-shadow, not box-shadow: box-shadow would halo the whole ellipse
+     including the invisible bottom half, drawing a full ring. */
+  filter: drop-shadow(0 0 1.6px rgba(140, 232, 255, 0.95));
+  opacity: 0;
 }
 
 /* ── Speech bubble ────────────────────────────────────────────── */
@@ -233,9 +292,19 @@ body {
   animation: botFloat 2.8s cubic-bezier(.45,.05,.55,.95) infinite;
 }
 
-/* BLINK — a fast squash; on a fixed face this reads as a blink */
+/* BLINK — the eyes actually close. The body keeps breathing underneath, so a
+   blink never freezes BEBO: it is the one expression that touches only the
+   eyes. One second end to end: shuts fast, holds, opens gently. */
 .pet-blink {
-  animation: botBlink 260ms cubic-bezier(.3,0,.3,1) 1;
+  animation: botFloat 2.8s cubic-bezier(.45,.05,.55,.95) infinite;
+}
+
+.pet-blink .pet-eye::before {
+  animation: botEyelid 1s cubic-bezier(.33,0,.25,1) 1;
+}
+
+.pet-blink .pet-eye::after {
+  animation: botEyeLine 1s linear 1;
 }
 
 /* SWAY — lazy side-to-side shift of weight */
@@ -330,10 +399,20 @@ body {
   50%      { transform: translateY(-5px) scale(0.995, 1.015); }
 }
 
-@keyframes botBlink {
-  0%, 100% { transform: scale(1, 1); }
-  45%      { transform: scale(1.035, 0.90); }
-  70%      { transform: scale(0.99, 1.025); }
+/* Lid travel. Real eyes shut far faster than they open, so the close takes
+   ~220ms, the eye stays shut for ~350ms, and the lift takes the rest. */
+@keyframes botEyelid {
+  0%        { transform: scaleY(0); }
+  22%       { transform: scaleY(1); }
+  57%       { transform: scaleY(1); }
+  100%      { transform: scaleY(0); }
+}
+
+/* The glint is only visible while the lid is actually down. */
+@keyframes botEyeLine {
+  0%, 17%   { opacity: 0; }
+  25%, 54%  { opacity: 1; }
+  64%, 100% { opacity: 0; }
 }
 
 @keyframes botSway {
@@ -456,6 +535,12 @@ body {
 
 /* Respect the OS "reduce motion" setting: keep BEBO calm and still. */
 @media (prefers-reduced-motion: reduce) {
-  #pet-character { animation: none !important; }
+  #pet-body { animation: none !important; }
   #pet-fx span { animation: none !important; opacity: 0 !important; }
+  /* Eyes stay open: a blink is motion too, and a lid frozen mid-close would
+     leave BEBO looking half-asleep. */
+  .pet-eye::before,
+  .pet-eye::after { animation: none !important; }
+  .pet-eye::before { transform: scaleY(0) !important; }
+  .pet-eye::after { opacity: 0 !important; }
 }
