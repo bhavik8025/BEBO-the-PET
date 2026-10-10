@@ -191,7 +191,7 @@
        composited on contributes nothing under screen blending, so the frame
        disappears into whatever dark background sits behind it. */
     .hero-demo img,
-    .reel { display: block; mix-blend-mode: screen; }
+    .reel { display: block; mix-blend-mode: screen; max-width: 100%; height: auto; }
     .hero-demo figcaption {
       margin-top: 4px; font-size: 11.5px; color: var(--muted);
       letter-spacing: .04em; text-transform: uppercase;
@@ -623,7 +623,7 @@
             <source srcset="bebo-expressions.webp" type="image/webp" />
             <img src="bebo-expressions-still.png"
                  alt="BEBO the PET animated desktop robot stretching, dancing, waving and falling asleep on a Windows desktop"
-                 width="222" height="249" />
+                 width="280" height="314" />
           </picture>
           <figcaption>Real capture, not a mockup</figcaption>
         </figure>
@@ -911,7 +911,7 @@
       <div class="showcase-media">
         <picture>
           <source srcset="bebo-expressions.webp" type="image/webp" />
-          <img src="bebo-expressions-still.png" width="222" height="249" class="reel"
+          <img src="bebo-expressions-still.png" width="280" height="314" class="reel"
                alt="BEBO the PET cycling through its expressions: stretching, dancing, waving and sleeping" />
         </picture>
       </div>
