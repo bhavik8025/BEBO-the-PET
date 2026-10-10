@@ -26,14 +26,17 @@ const PACE = {
 };
 
 // Weighted so most activity is almost subliminal and the big stuff is a treat.
+// `ms` must exceed the CSS animation length or the pet snaps back to idle
+// mid-movement: sway runs 7.2s and dance 4.2s, so a flat cutoff truncated them.
 const REPERTOIRE = [
-  { state: 'blink',      weight: 34, quiet: true },
-  { state: 'sway',       weight: 22, quiet: true },
-  { state: 'lookAround', weight: 16 },
-  { state: 'stretch',    weight: 11 },
-  { state: 'wave',       weight: 7 },
-  { state: 'jump',       weight: 6 },
-  { state: 'dance',      weight: 4 }
+  { state: 'blink',      weight: 34, ms: 450 },
+  { state: 'sway',       weight: 22, ms: 7400 },   // botSway 3.6s x2
+  { state: 'lookAround', weight: 16, ms: 3000 },   // botLook 2.8s
+  { state: 'stretch',    weight: 11, ms: 1700 },   // botStretch 1.5s
+  { state: 'wave',       weight: 7,  ms: 1450 },   // botWave 1.25s
+  { state: 'jump',       weight: 6,  ms: 1180 },   // botJump 980ms
+  { state: 'dance',      weight: 4,  ms: 4400 },   // botDance 2.1s x2
+  { state: 'yawn',       weight: 0,  ms: 2000 }    // night only, see pickExpression
 ];
 
 const SLEEP_AFTER_SEC = 10 * 60;   // system idle before BEBO dozes off
@@ -45,21 +48,24 @@ let busy = false;                  // an AI task is running
 
 function pickExpression(hour) {
   // Time of day nudges the mood: a stretch in the morning, a yawn late at night.
+  const night = hour >= 23 || hour < 5;
+  const morning = hour >= 5 && hour < 10;
+
   const pool = REPERTOIRE.map((item) => {
     let weight = item.weight;
-    if (hour >= 5 && hour < 10 && item.state === 'stretch') weight *= 3;
-    if ((hour >= 23 || hour < 5) && item.state === 'dance') weight = 0;
-    if ((hour >= 23 || hour < 5) && item.state === 'jump') weight = 0;
-    return { state: item.state, weight };
+    if (morning && item.state === 'stretch') weight *= 3;
+    if (night && (item.state === 'dance' || item.state === 'jump')) weight = 0;
+    if (item.state === 'yawn') weight = night ? 18 : 0;   // sleepy only at night
+    return { state: item.state, weight, ms: item.ms };
   }).filter((i) => i.weight > 0);
 
   const total = pool.reduce((sum, i) => sum + i.weight, 0);
   let roll = Math.random() * total;
   for (const item of pool) {
     roll -= item.weight;
-    if (roll <= 0) return item.state;
+    if (roll <= 0) return item;
   }
-  return 'blink';
+  return REPERTOIRE[0];
 }
 
 function currentPace() {
@@ -93,8 +99,8 @@ function startAmbient({ petWindow, panelWindow }) {
       const hidden = !alive() || !petWindow.isVisible();
       // Stay out of the way while the user is actually working with BEBO.
       if (!busy && !asleep && !panelInUse && !hidden) {
-        const state = pickExpression(new Date().getHours());
-        play(state, 2600);
+        const pick = pickExpression(new Date().getHours());
+        play(pick.state, pick.ms);     // per-expression, so nothing is truncated
       }
       scheduleNext();
     }, gap));
