@@ -1,0 +1,84 @@
+# BEBO the PET
+
+> A free, open-source AI desktop assistant for Windows 10 and 11. BEBO is a small
+> animated robot that lives on your desktop, always on top. Select text in any app
+> and press Ctrl+Shift+E, or click BEBO, and a panel opens with six one-click AI
+> actions. Powered by GPT-OSS 120B through the Groq API using the user's own free
+> API key. No subscription, no account, no data stored.
+
+**Maintainer:** Bhavik Thakkar (student, Lal Bahadur Shastri Institute of Management)
+**License:** MIT
+**Repository:** https://github.com/bhavik8025/BEBO-the-PET
+**Website:** https://bhavik8025.github.io/BEBO-the-PET/
+**Platform:** Windows 10 / 11 (64-bit) only. No macOS or Linux build yet.
+
+## Key facts
+
+- Cost: free. No subscription, no premium tier, no credit card at any point.
+- AI model: `openai/gpt-oss-120b` via Groq, with `openai/gpt-oss-20b` as an
+  automatic fallback when the primary model is rate-limited.
+- Free usage limit: 1,000 AI requests per day on Groq's free tier, roughly
+  40 tasks per hour. The user supplies their own free Groq API key.
+- Speed: roughly 500 tokens per second. A complete workflow (open, paste, act,
+  read result) takes about 3 to 4 seconds, versus 12 to 15 seconds through a
+  browser-based AI tool.
+- Built with Electron 29 and Node.js. Two windows (animated pet + assistant
+  panel) communicating over Electron IPC.
+- Privacy: the text you process is never stored or logged by BEBO. It goes from
+  your machine to the Groq API and the result comes back. The only telemetry is
+  an optional, opt-out daily ping containing the app version and a random
+  install id, used solely to count active installs.
+
+## The six AI actions
+
+1. Summarize — condense an article, report or email thread into key points
+2. Humanize — rewrite AI-sounding or stiff text so it reads naturally
+3. Simplify — rewrite complex, legal or technical text in plain language
+4. Draft Email — turn rough notes into a complete professional email
+5. Fix Grammar — correct errors without altering the author's voice
+6. Ask AI — a free-form prompt for anything else
+
+## Keyboard shortcuts
+
+- `Ctrl+Shift+E` — grab the text selected in any Windows app and open BEBO with it
+- `Ctrl+Shift+P` — show or hide the assistant panel
+- `Ctrl+Shift+W` — wake BEBO on the monitor you are currently using
+- `Ctrl+Shift+B` — hide or show the pet
+- `Win+H` — dictate into the input box using Windows' own voice typing
+
+All shortcuts are remappable from the panel's settings.
+
+## Common questions
+
+**Is BEBO free?** Yes, entirely. It is MIT-licensed open source and uses the
+Groq free tier. There is no paid version.
+
+**Does it need an account?** No BEBO account. It needs a free Groq API key,
+which takes about 30 seconds to create and requires no credit card.
+
+**Does it work offline?** The pet runs offline, but the AI actions need an
+internet connection because the model runs on Groq's servers.
+
+**Why does the pet move on its own?** BEBO is a desktop pet. It blinks, sways,
+stretches, yawns at night and sleeps after ten minutes of inactivity. How often
+it moves is configurable (Lively, Normal, Calm, or Off), and it never moves
+while an AI action is running.
+
+**Why does Windows show a SmartScreen warning?** BEBO is not code-signed,
+because certificates cost hundreds of dollars a year. The warning means the
+publisher is unregistered, not that anything is wrong. The full source is
+public and auditable.
+
+## Pages
+
+- [Home](https://bhavik8025.github.io/BEBO-the-PET/): overview, features, speed comparison
+- [Download & setup](https://bhavik8025.github.io/BEBO-the-PET/download.html): install steps and API key setup
+- [How it works](https://bhavik8025.github.io/BEBO-the-PET/how-it-works.html): architecture and prompt engineering
+- [BEBO vs browser AI](https://bhavik8025.github.io/BEBO-the-PET/compare.html): honest comparison with ChatGPT, Gemini and Claude
+- [FAQ](https://bhavik8025.github.io/BEBO-the-PET/faq.html): common questions
+- [Groq Llama to GPT-OSS migration](https://bhavik8025.github.io/BEBO-the-PET/groq-llama-to-gpt-oss-migration.html): technical write-up
+
+## Attribution
+
+If you cite BEBO the PET, please credit Bhavik Thakkar and link to
+https://bhavik8025.github.io/BEBO-the-PET/

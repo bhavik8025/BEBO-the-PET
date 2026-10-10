@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>How BEBO Works — Electron + Groq AI Desktop Assistant Architecture</title>
-  <meta name="description" content="How BEBO the PET works under the hood: dual-window Electron architecture, GPT-OSS 120B via Groq at ~500 tokens/sec, structured prompt engineering, and global Windows shortcuts." />
+  <title>How BEBO Works — Electron + Groq AI Architecture</title>
+  <meta name="description" content="How BEBO the PET works: dual-window Electron architecture, GPT-OSS 120B via Groq at ~500 tokens/sec, contract-first prompts and global Windows shortcuts." />
   <link rel="canonical" href="https://bhavik8025.github.io/BEBO-the-PET/how-it-works.html" />
   <meta property="og:type" content="article" />
   <meta property="og:title" content="How BEBO Works — AI Desktop Assistant Architecture" />
@@ -12,6 +12,10 @@
   <meta property="og:url" content="https://bhavik8025.github.io/BEBO-the-PET/how-it-works.html" />
   <meta property="og:image" content="https://bhavik8025.github.io/BEBO-the-PET/bebo-avatar.png" />
 
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="How BEBO Works — Electron + Groq AI Architecture" />
+  <meta name="twitter:description" content="How BEBO the PET works: dual-window Electron architecture, GPT-OSS 120B via Groq at ~500 tokens/sec, contract-first prompts and global Windows shortcuts." />
+  <meta name="twitter:image" content="https://bhavik8025.github.io/BEBO-the-PET/bebo-avatar.png" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -111,7 +115,7 @@
   <h1>How BEBO Works</h1>
   <p class="sub">The full technical story — how a tiny desktop robot delivers AI results in under 2 seconds on Windows.</p>
 
-  <h2><span class="tag">01.</span> The User Flow</h2>
+  <h2><span class="tag">01.</span> What happens when you click BEBO?</h2>
   <p>BEBO removes every step between "I need AI" and "I have my result". The complete flow:</p>
   <div class="flow">
     <div class="flow-step"><span class="n">1</span><h3>BEBO sits on your desktop</h3><p>Always on top, always visible</p></div>
@@ -121,7 +125,7 @@
     <div class="flow-step"><span class="n">5</span><h3>Result in ~2 seconds</h3><p>Edit, copy, done</p></div>
   </div>
 
-  <h2><span class="tag">02.</span> Dual-Window Electron Architecture</h2>
+  <h2><span class="tag">02.</span> How is BEBO built?</h2>
   <p>BEBO is a native Windows app built with <strong>Electron v29</strong>. It runs two separate windows that talk to each other through a secure IPC bridge:</p>
   <pre>
 <span class="k">Main Process (Node.js)</span>
@@ -138,7 +142,7 @@
   <p>The pet window is tiny, transparent and click-through-resistant — it floats above every app. When clicked, it asks the main process to open the panel window <strong>right next to the pet's current position</strong>, clamped to your screen's work area so it never opens off-screen.</p>
   <p>Security: both renderers run with <strong>contextIsolation enabled</strong> and talk to Node.js only through narrow preload bridges — the same pattern used by production Electron apps like VS Code and Slack.</p>
 
-  <h2><span class="tag">03.</span> Why Groq + GPT-OSS 120B</h2>
+  <h2><span class="tag">03.</span> Why Groq and GPT-OSS 120B?</h2>
   <p>BEBO's promise is speed, so the model choice was driven by one number: <strong>tokens per second</strong>.</p>
   <table>
     <thead><tr><th>Model</th><th>Tokens / sec</th><th>200-token task</th><th>Free tier</th></tr></thead>
@@ -151,7 +155,7 @@
   </table>
   <p>Groq's custom LPU hardware serves GPT-OSS 120B roughly <strong>5x faster than GPU-based APIs</strong>. For productivity tasks — summarizing, grammar, email drafting — output quality is equivalent to the best paid models, and the free tier needs no credit card.</p>
 
-  <h2><span class="tag">04.</span> The Prompt Engine</h2>
+  <h2><span class="tag">04.</span> How are the prompts engineered?</h2>
   <p>Every one of BEBO's 6 functions uses a structured 4-layer prompt instead of a naive instruction:</p>
   <div class="card">
     <p style="margin-bottom:8px;"><strong style="color:var(--purple)">ROLE</strong> — sets expert framing: tells the model exactly who it is</p>
@@ -173,7 +177,7 @@
   </table>
   <p>Every response also passes through a <strong>stripMarkdown()</strong> post-processor, so the output is always clean plain text — ready to paste anywhere without stray asterisks or formatting noise.</p>
 
-  <h2><span class="tag">05.</span> Global Shortcuts</h2>
+  <h2><span class="tag">05.</span> What keyboard shortcuts does BEBO have?</h2>
   <p>Three system-wide hotkeys registered through Electron's globalShortcut API — they work inside any app: Word, Excel, your browser, anywhere on Windows.</p>
   <table>
     <thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
@@ -186,7 +190,7 @@
   </table>
   <p>New in <strong>BEBO 2.0</strong>: all three shortcuts can be remapped from the &#9881; settings inside the panel — pick any combo that suits your workflow. (Hide moved from Ctrl+Shift+H to Ctrl+Shift+B so Windows' <kbd>Win + H</kbd> voice typing stays untouched.)</p>
 
-  <h2><span class="tag">06.</span> Privacy by Architecture</h2>
+  <h2><span class="tag">06.</span> Is BEBO private?</h2>
   <p>BEBO is <strong>stateless by design</strong>. There is no account and no database. Your text travels directly from your machine to the Groq API over HTTPS and the result comes back — nothing is stored anywhere in between. The only things saved locally are your own API key and settings. The only thing BEBO ever reports is an optional <strong>anonymous daily ping</strong> — app version plus a random id, never your text — used purely to count active installs; switch it off anytime in the panel settings. The entire source code is <a href="https://github.com/bhavik8025/BEBO-the-PET" target="_blank" rel="noopener">public on GitHub</a>, so none of this requires trust — you can read it.</p>
 
   <div class="cta-box">
