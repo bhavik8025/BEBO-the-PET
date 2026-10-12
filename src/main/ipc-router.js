@@ -24,24 +24,52 @@ let activeTask = null;
 const PET_BODY = { width: 80, height: 80, bottomInset: 6 };
 let petIsDragging = false;
 
+/* If drag-ended never arrives the watcher below would freeze forever and the
+   pet could be left permanently unclickable. Pointer capture in the renderer
+   should prevent that, but a renderer crash or reload still would not send it,
+   so main refuses to stay in "dragging" without the drag making progress. */
+const DRAG_WATCHDOG_MS = 5000;
+let dragWatchdog = null;
+
+function setPetDragging(value) {
+  petIsDragging = Boolean(value);
+  if (dragWatchdog) clearTimeout(dragWatchdog);
+  dragWatchdog = null;
+  if (petIsDragging) {
+    dragWatchdog = setTimeout(() => { petIsDragging = false; }, DRAG_WATCHDOG_MS);
+  }
+}
+
 function startClickThroughWatcher(petWindow) {
   let overBody = null;                       // null = unknown, force first write
+  let sinceWrite = 0;
 
   const tick = () => {
     if (!petWindow || petWindow.isDestroyed()) return;
-    if (petIsDragging) return;               // never go click-through mid-drag
     if (!petWindow.isVisible()) return;
 
-    const cursor = screen.getCursorScreenPoint();
-    const b = petWindow.getBounds();
-    const left = b.x + Math.round((b.width - PET_BODY.width) / 2);
-    const top = b.y + b.height - PET_BODY.bottomInset - PET_BODY.height;
-    const over =
-      cursor.x >= left && cursor.x <= left + PET_BODY.width &&
-      cursor.y >= top && cursor.y <= top + PET_BODY.height;
+    let over;
+    if (petIsDragging) {
+      // Stay clickable for the whole drag. This used to return early instead,
+      // which meant a drag that never ended froze whatever state we happened
+      // to be in - including click-through on, which bricks the pet.
+      over = true;
+    } else {
+      const cursor = screen.getCursorScreenPoint();
+      const b = petWindow.getBounds();
+      const left = b.x + Math.round((b.width - PET_BODY.width) / 2);
+      const top = b.y + b.height - PET_BODY.bottomInset - PET_BODY.height;
+      over =
+        cursor.x >= left && cursor.x <= left + PET_BODY.width &&
+        cursor.y >= top && cursor.y <= top + PET_BODY.height;
+    }
 
-    if (over !== overBody) {
+    // Re-assert every couple of seconds even when nothing changed: if our
+    // cached value and the window's real state ever diverge, only writing on
+    // change would leave the pet stuck for good.
+    if (over !== overBody || ++sinceWrite >= 25) {
       overBody = over;
+      sinceWrite = 0;
       petWindow.setIgnoreMouseEvents(!over, { forward: true });
     }
   };
@@ -199,17 +227,19 @@ function setupIPC({ petWindow, panelWindow }) {
   });
 
   ipcMain.on('pet:drag-started', () => {
-    petIsDragging = true;
+    setPetDragging(true);
     sendPetState(petWindow, 'listening');
   });
 
   ipcMain.on('pet:dragged', (_, { x, y }) => {
     if (!petWindow || petWindow.isDestroyed()) return;
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+    setPetDragging(true);                   // keep the watchdog alive
     petWindow.setPosition(Math.round(x), Math.round(y));
   });
 
   ipcMain.on('pet:drag-ended', () => {
-    petIsDragging = false;
+    setPetDragging(false);
     sendPetState(petWindow, 'idle');
   });
 

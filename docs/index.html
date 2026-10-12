@@ -1237,7 +1237,11 @@
    lifetime total. If the API call fails, the static fallback in the HTML
    stays put. */
 (function () {
-  var ARCHIVED_V1 = 44;
+  // 44 from the removed v1.0.0 installers, plus 10 from the v2.1.0 assets
+  // that had to be deleted to re-upload the click-through fix. Deleting a
+  // GitHub release asset destroys its download count permanently, so the
+  // lifetime total is only honest if those are carried here.
+  var ARCHIVED_V1 = 54;
   var el = document.getElementById('dl-total');
   if (!el || !window.fetch) return;
   fetch('https://api.github.com/repos/bhavik8025/BEBO-the-PET/releases')

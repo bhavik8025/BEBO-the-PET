@@ -74,32 +74,67 @@ petButton.addEventListener('mouseleave', () => {
   }
 });
 
-petButton.addEventListener('mousedown', (event) => {
+/* Dragging uses pointer events with capture, not mouse events.
+   BUG FIX: the window is 132x148 and only moves once per dragged() round trip,
+   so a quick drag lets the cursor outrun it. With plain mouse events the
+   mouseup then landed on whatever window was underneath, this renderer never
+   saw it, and the drag never ended: isDragging stayed true, main stayed in
+   "dragging" so it froze the click-through state, and didDrag stayed true so
+   every later click was swallowed. The pet ended up parked mid-screen,
+   unclickable and undraggable. setPointerCapture guarantees we still receive
+   pointerup wherever the cursor has got to. */
+const DRAG_THRESHOLD = 4;          // px of travel before a press is a drag
+let dragPointerId = null;
+let pressScreenX = 0;
+let pressScreenY = 0;
+
+function endDrag() {
+  if (!isDragging) return;
+  if (dragPointerId !== null) {
+    try { petButton.releasePointerCapture(dragPointerId); } catch (_) {}
+    dragPointerId = null;
+  }
+  isDragging = false;
+  window.petAPI.dragEnded();
+}
+
+petButton.addEventListener('pointerdown', (event) => {
   if (event.button !== 0) return;
+  dragPointerId = event.pointerId;
+  try { petButton.setPointerCapture(event.pointerId); } catch (_) {}
   isDragging = true;
   didDrag = false;
+  pressScreenX = event.screenX;
+  pressScreenY = event.screenY;
   dragOffsetX = event.clientX;
   dragOffsetY = event.clientY;
   window.petAPI.dragStarted();
 });
 
-window.addEventListener('mousemove', (event) => {
-  if (!isDragging) return;
-  didDrag = true;
+petButton.addEventListener('pointermove', (event) => {
+  if (!isDragging || event.pointerId !== dragPointerId) return;
+  if (!didDrag) {
+    // A click with a bit of hand tremor is still a click. Previously any
+    // movement at all set didDrag, so a slightly shaky click did nothing.
+    if (Math.abs(event.screenX - pressScreenX) < DRAG_THRESHOLD &&
+        Math.abs(event.screenY - pressScreenY) < DRAG_THRESHOLD) return;
+    didDrag = true;
+  }
   window.petAPI.dragged({
     x: event.screenX - dragOffsetX,
     y: event.screenY - dragOffsetY
   });
 });
 
-window.addEventListener('mouseup', () => {
-  if (!isDragging) return;
-  isDragging = false;
-  window.petAPI.dragEnded();
-});
+petButton.addEventListener('pointerup', endDrag);
+petButton.addEventListener('pointercancel', endDrag);
+window.addEventListener('blur', endDrag);
 
 petButton.addEventListener('click', () => {
-  if (didDrag) return;
+  if (didDrag) {
+    didDrag = false;      // never let a stale drag swallow the next click too
+    return;
+  }
   window.petAPI.clicked();
 });
 
